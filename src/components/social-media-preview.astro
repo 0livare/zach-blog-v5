@@ -1,0 +1,28 @@
+---
+interface Props {
+  type: 'website' | 'article' | 'product' | 'book' | 'place' | 'profile' | 'video.movie'
+  title: string
+  description?: string
+  src?: string
+}
+
+const {type, title, description, src} = Astro.props
+const {pathname} = Astro.url
+---
+
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content={type} />
+<meta property="og:title" content={title} />
+{description && <meta property="og:description" content={description} />}
+<meta property="og:url" content={pathname} />
+<meta property="og:site_name" content="Zach's Blog" />
+<meta
+  property="og:image"
+  content={src
+    ? 'https://www.olivare.net' + src
+    : 'https://www.olivare.net/static/images/home/zach.jpg'}
+/>
+<meta
+  property="og:image:secure_url"
+  content={src || 'https://www.olivare.net/static/images/home/zach.jpg'}
+/>

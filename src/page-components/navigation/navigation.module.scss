@@ -1,0 +1,27 @@
+.navLink {
+  transition: text-shadow 250ms;
+
+  &:hover {
+    text-shadow: 0 0 10px black;
+
+    @media (prefers-color-scheme: dark) {
+      // prettier-ignore
+      text-shadow: 
+        0 0 10px white, 
+        0 0 20px white,
+        0 0 30px white;
+    }
+  }
+}
+
+.forceWhiteGlow a {
+  color: white !important;
+
+  &:hover {
+    // prettier-ignore
+    text-shadow: 
+        0 0 10px white, 
+        0 0 20px white,
+        0 0 30px white !important;
+  }
+}

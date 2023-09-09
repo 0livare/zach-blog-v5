@@ -1,0 +1,50 @@
+.root {
+  // prettier-ignore
+  --start-shadow: 
+    0 0 10px white, 
+    0 0 20px white,
+    0 0 30px white,
+    0 0 40px var(--teal),
+    0 0 70px var(--teal),
+    0 0 80px var(--teal),
+    0 0 100px var(--teal),
+    0 0 150px var(--teal);
+
+  // prettier-ignore
+  --end-shadow:
+    0 0 5px  white,
+    0 0 10px white,
+    0 0 15px white,
+    0 0 20px var(--teal),
+    0 0 35px var(--teal),
+    0 0 40px var(--teal),
+    0 0 50px var(--teal),
+    0 0 75px var(--teal);
+
+  transition: all;
+
+  &.hover,
+  &:hover {
+    animation:
+      neon-start 0.5s ease-in,
+      neon2 1.5s ease-in-out 0.5s infinite alternate;
+  }
+
+  @keyframes neon-start {
+    from {
+      text-shadow: none;
+    }
+    to {
+      text-shadow: var(--start-shadow);
+    }
+  }
+
+  @keyframes neon2 {
+    from {
+      text-shadow: var(--start-shadow);
+    }
+    to {
+      text-shadow: var(--end-shadow);
+    }
+  }
+}

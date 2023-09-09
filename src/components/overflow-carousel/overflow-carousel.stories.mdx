@@ -1,0 +1,146 @@
+import {Meta, Story, Canvas} from '@storybook/addon-docs/blocks'
+
+import {LiveExample, LeftRightScroll, Placeholder} from '../../../.storybook/components'
+import {OverflowCarousel} from './overflow-carousel'
+
+<Meta title="Components/Docs/Overflow Carousel" />
+
+# Overflow Carousel
+
+The Overflow Carousel is a row of items that can be swiped/scrolled through when they no longer fit on the screen. On Desktop, the content of the Overflow Carousel will usually be fully visible on the page.
+
+```jsx
+<OverflowCarousel>
+  <OverflowCarousel.Slide>
+    <Placeholder color="royalblue" />
+  </OverflowCarousel.Slide>
+  <OverflowCarousel.Slide>
+    <Placeholder color="rebeccapurple" />
+  </OverflowCarousel.Slide>
+  <OverflowCarousel.Slide>
+    <Placeholder color="goldenrod" />
+  </OverflowCarousel.Slide>
+</OverflowCarousel>
+```
+
+<LiveExample belowCode>
+  <OverflowCarousel>
+    <OverflowCarousel.Slide>
+      <Placeholder color="royalblue" />
+    </OverflowCarousel.Slide>
+    <OverflowCarousel.Slide>
+      <Placeholder color="rebeccapurple" />
+    </OverflowCarousel.Slide>
+    <OverflowCarousel.Slide>
+      <Placeholder color="goldenrod" />
+    </OverflowCarousel.Slide>
+  </OverflowCarousel>
+</LiveExample>
+
+On mobile devices though, the content can be swiped through one item at a time.
+
+## Initial Position
+
+Sometimes it may not be desirable to default to the left-most item in the carousel. You can pass the `initialIndex` prop to control that.
+
+```jsx
+<OverflowCarousel initialIndex={2}>
+  <OverflowCarousel.Slide>
+    <Placeholder color="royalblue" />
+  </OverflowCarousel.Slide>
+  <OverflowCarousel.Slide>
+    <Placeholder color="rebeccapurple" />
+  </OverflowCarousel.Slide>
+  <OverflowCarousel.Slide>
+    <Placeholder color="goldenrod" />
+  </OverflowCarousel.Slide>
+  <OverflowCarousel.Slide>
+    <Placeholder color="limegreen" />
+  </OverflowCarousel.Slide>
+  // ... other color placeholders
+</OverflowCarousel>
+```
+
+<LiveExample belowCode>
+  <OverflowCarousel initialIndex={2}>
+    <OverflowCarousel.Slide>
+      <Placeholder color="royalblue" />
+    </OverflowCarousel.Slide>
+    <OverflowCarousel.Slide>
+      <Placeholder color="rebeccapurple" />
+    </OverflowCarousel.Slide>
+    <OverflowCarousel.Slide>
+      <Placeholder color="goldenrod" />
+    </OverflowCarousel.Slide>
+    <OverflowCarousel.Slide>
+      <Placeholder color="limegreen" />
+    </OverflowCarousel.Slide>
+    <OverflowCarousel.Slide>
+      <Placeholder color="fuchsia" />
+    </OverflowCarousel.Slide>
+    <OverflowCarousel.Slide>
+      <Placeholder color="aquamarine" />
+    </OverflowCarousel.Slide>
+    <OverflowCarousel.Slide>
+      <Placeholder color="olivedrab" />
+    </OverflowCarousel.Slide>
+    <OverflowCarousel.Slide>
+      <Placeholder color="dodgerblue" />
+    </OverflowCarousel.Slide>
+    <OverflowCarousel.Slide>
+      <Placeholder color="indigo" />
+    </OverflowCarousel.Slide>
+    <OverflowCarousel.Slide>
+      <Placeholder color="sandybrown" />
+    </OverflowCarousel.Slide>
+  </OverflowCarousel>
+</LiveExample>
+
+## Accessibility
+
+It is of the utmost importance with this component that users be able to scroll through the carousel regardless of their input device. We gain a lot of accessibility by default because the implementation utilizes a scroll area, but we have built others in.
+
+<LiveExample>
+  <OverflowCarousel>
+    <OverflowCarousel.Slide>
+      <Placeholder color="royalblue" />
+    </OverflowCarousel.Slide>
+    <OverflowCarousel.Slide>
+      <Placeholder color="rebeccapurple" />
+    </OverflowCarousel.Slide>
+    <OverflowCarousel.Slide>
+      <Placeholder color="goldenrod" />
+    </OverflowCarousel.Slide>
+    <OverflowCarousel.Slide>
+      <Placeholder color="limegreen" />
+    </OverflowCarousel.Slide>
+    <OverflowCarousel.Slide>
+      <Placeholder color="fuchsia" />
+    </OverflowCarousel.Slide>
+    <OverflowCarousel.Slide>
+      <Placeholder color="aquamarine" />
+    </OverflowCarousel.Slide>
+    <OverflowCarousel.Slide>
+      <Placeholder color="olivedrab" />
+    </OverflowCarousel.Slide>
+    <OverflowCarousel.Slide>
+      <Placeholder color="dodgerblue" />
+    </OverflowCarousel.Slide>
+    <OverflowCarousel.Slide>
+      <Placeholder color="indigo" />
+    </OverflowCarousel.Slide>
+    <OverflowCarousel.Slide>
+      <Placeholder color="sandybrown" />
+    </OverflowCarousel.Slide>
+  </OverflowCarousel>
+</LiveExample>
+
+Here is a complete list of ways that one can navigate the Overflow Carousel:
+
+- _(mouse)_ A horizontal scroll wheel can be used because the carousel is a standard horizontal scroll area
+- _(mouse)_ If you hover over any carousel slide, you will see the grab hand cursor and are able to click, hold, and drag the carousel left and right
+- _(mouse)_ When there is content to be scrolled (except on mobile), arrows will appear that can be clicked to scroll left and right
+- _(mobile)_ On mobile devices the carousel can be naturally scrolled through with your finger, exactly as you would expect
+- _(keyboard)_ The keyboard arrow keys can be used to scroll left and right through the carousel
+- _(keyboard)_ The tab key can be used to navigate through each of the carousel slides, and scrolling will happen automatically as you tab to slides that are not currently in view.
+- _(trackpad)_ Swiping horizontally on your trackpad will work identically to horizontally scrolling with a mouse, as you would expect.

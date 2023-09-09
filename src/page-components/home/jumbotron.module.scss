@@ -1,0 +1,28 @@
+.wrapperShadow {
+  filter: drop-shadow(0px 10px 5px rgba(0, 0, 0, 0.5));
+}
+
+.wrapper {
+  background-image: radial-gradient(circle, var(--teal) 20%, var(--teal-dark) 80%);
+  clip-path: polygon(
+    0 0,
+    /* left top */ 100% 0,
+    /* right top */ 100% calc(100% - 6vw),
+    /* right bottom */ 0 100% /* left bottom */
+  );
+}
+
+.socialLink {
+  transition: filter 0.5s;
+
+  &:hover {
+    // prettier-ignore
+    filter: 
+      drop-shadow(0 0 10px white)
+      drop-shadow(0 0 20px white)
+      drop-shadow(0 0 25px white)
+      drop-shadow(0 0 30px white)
+      drop-shadow(0 0 40px var(--teal))
+      drop-shadow(0 0 50px var(--teal))
+  }
+}
