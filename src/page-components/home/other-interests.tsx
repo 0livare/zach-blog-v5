@@ -1,21 +1,13 @@
 import type {ComponentProps} from 'react'
-import {Gallery, LightBox, Thumbnail} from '@olivare/react-photo-gallery'
 import {twMerge as cs} from 'tailwind-merge'
 
-import '@olivare/react-photo-gallery/photoswipe.css'
-import '@olivare/react-photo-gallery/default-skin.css'
-import '@olivare/react-photo-gallery/thumbnails.css'
-
-import {featuredSlides} from '~/content/photography'
-import {useMediaQuery} from '~/hooks'
 import {SectionTitle} from './section-title'
+import {PhotoGallery} from './photo-gallery/photo-gallery'
 
 export type OtherInterestsProps = ComponentProps<'div'>
 
 export function OtherInterests(props: OtherInterestsProps) {
   let {className, ...rest} = props
-
-  const isMobile = useMediaQuery({is: 'mobile'})
 
   return (
     <div {...rest} className={cs('OtherInterests', 'p-4 md:p-16 bg-off-white', className)}>
@@ -33,12 +25,7 @@ export function OtherInterests(props: OtherInterestsProps) {
         &apos;ol 3x3.
       </Paragraph>
 
-      <Gallery slides={featuredSlides} className="mt-16 gap-1 md:gap-2">
-        {featuredSlides.map((slide) => (
-          <Thumbnail key={slide.src} slide={slide} aspectRatioMultiplier={isMobile ? 75 : 200} />
-        ))}
-        <LightBox />
-      </Gallery>
+      <PhotoGallery />
     </div>
   )
 }
