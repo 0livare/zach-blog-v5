@@ -9,7 +9,7 @@ published: true
 slug: write-better-commit-messages
 ---
 
-import {Sparkles, mdxComponents} from '~/components'
+import {Sparkles, Asterisk, mdxComponents} from '~/components'
 export const components = mdxComponents
 
 If you haven't read Chris Beams' infamous [article](https://cbea.ms/git-commit/) about writing git commit messages, you should! That [and][1] [other][2] [similar][3] [posts][4] [are][5] [where][6] I pull many of my thoughts on the topic from. [XKCD] also has a fun comic on this topic.
@@ -28,7 +28,7 @@ The Beams article makes a lot of fantastic points and you should absolutely read
 2. Limit the subject line to 50 characters
 3. Capitalize the subject line
 4. Do not end the subject line with a period
-5. Use the <Asterisk text='As if you were giving a command, without suffixes like "ed" or "ing"'>[imperative mood](https://en.wikipedia.org/wiki/Imperative_mood)</Asterisk> in the subject line
+5. Use the <Asterisk client:load text='As if you were giving a command, without suffixes like "ed" or "ing"'>[imperative mood](https://en.wikipedia.org/wiki/Imperative_mood)</Asterisk> in the subject line
 6. Wrap the body at 72 characters
 7. Use the body to explain what and why vs. how
 8. **Use [Conventional Commit](https://www.conventionalcommits.org/en/v1.0.0/#summary) prefixes at the beginning of the subject**
@@ -38,7 +38,7 @@ In this post, instead of repeating what more articulate authors than I have alre
 
 ## Motivation
 
-The motivation behind each of the rules that involves the subject line can be summed up in a single word, <Sparkles>brevity</Sparkles> (also consistency, but I was trying to be brief). The goal is to communicate as much useful information as possible about what this commit does in the fewest number of characters.
+The motivation behind each of the rules that involves the subject line can be summed up in a single word, <Sparkles client:load>brevity</Sparkles> (also consistency, but I was trying to be brief). The goal is to communicate as much useful information as possible about what this commit does in the fewest number of characters.
 
 One could perhaps restate those rules as:
 

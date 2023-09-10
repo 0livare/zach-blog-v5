@@ -35,7 +35,7 @@ Snapshot tests are very alluring because they give you a lot of output while req
 
 But unfortunately, that sense of security is a lie.
 
-First and foremost, jest is wrong to say that snapshots "make sure your **UI** does not change"; what they actually do is let you know when your <Sparkles>markup</Sparkles> changes. And it's not necessarily problematic that the markup of your component changed. There are an infinite number of changes that I can make to your markup without changing your UI at all. You know how else I can determine if your markup is going to change? By actually reading the source code.
+First and foremost, jest is wrong to say that snapshots "make sure your **UI** does not change"; what they actually do is let you know when your <Sparkles client:load>markup</Sparkles> changes. And it's not necessarily problematic that the markup of your component changed. There are an infinite number of changes that I can make to your markup without changing your UI at all. You know how else I can determine if your markup is going to change? By actually reading the source code.
 
 The other biggest problem with snapshots is that in real world applications they end up changing very frequently and quite dramatically. The diffs of snapshot files end up being so long that the people reviewing your code are 90% of the time going to completely ignore them, removing 100% of their value. And even when people do take the time to attempt to read your massive snapshot diff, what are they supposed to be looking for? It is an exercise in futility.
 

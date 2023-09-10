@@ -8,7 +8,7 @@ heroImage: /images/blog/jest+ts.webp
 slug: testing-ts-type-defs
 ---
 
-import {mdxComponents} from '~/components'
+import {mdxComponents, Aside, ShowMore} from '~/components'
 export const components = mdxComponents
 
 Have you ever toiled to get the TypeScript types just right on a particular function and thought to yourself, "I wish I could write a test to make sure that I don't break this type definition next time I edit this function"? Me too! In this post I'll give you thorough instructions on how you can do just that.
@@ -98,31 +98,38 @@ let translate = initTranslation(
 )
 ```
 
-> Here is the full implementation of the `initTranslation` function in case it's helpful to aid in understanding:
->
-> ```ts
-> // src/init-translation.ts
->
-> export function initTranslation(
->   genericDict: Record<string, string>,
->   createPageSpecificDict?: (link: (key: any) => string) => Record<string, string>,
-> ): (key: string) => string {
->   const pageSpecificDict = createPageSpecificDict?.((key) => key)
->   const fullDict = { ...genericDict, ...pageSpecificDict }
->
->   function translate(key: string): string {
->     const val = fullDict[key] ?? ''
->     const isLinkedKey = !!genericDict[val]
->     return isLinkedKey ? translate(val) : val
->   }
->
->   // Give access to raw dictionary if desired for unit tests
->   translate.dictionary = fullDict
->   translate.keys = Object.keys(fullDict)
->
->   return translate
-> }
-> ```
+<Aside>
+
+  Here is the full implementation of the `initTranslation` function in case it's helpful to aid in understanding:
+
+  <ShowMore client:load>
+
+    ```ts
+    // src/init-translation.ts
+
+    export function initTranslation(
+      genericDict: Record<string, string>,
+      createPageSpecificDict?: (link: (key: any) => string) => Record<string, string>,
+    ): (key: string) => string {
+      const pageSpecificDict = createPageSpecificDict?.((key) => key)
+      const fullDict = { ...genericDict, ...pageSpecificDict }
+
+      function translate(key: string): string {
+        const val = fullDict[key] ?? ''
+        const isLinkedKey = !!genericDict[val]
+        return isLinkedKey ? translate(val) : val
+      }
+
+      // Give access to raw dictionary if desired for unit tests
+      translate.dictionary = fullDict
+      translate.keys = Object.keys(fullDict)
+
+      return translate
+    }
+    ```
+
+  </ShowMore>
+</Aside>
 
 ## Writing a Type Definition test
 

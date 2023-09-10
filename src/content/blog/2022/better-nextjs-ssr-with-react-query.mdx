@@ -8,7 +8,7 @@ heroImage: /images/blog/next-js-with-react-query.png
 slug: better-nextjs-ssr-with-react-query
 ---
 
-import {mdxComponents} from '~/components'
+import {mdxComponents, ShowMore, Aside} from '~/components'
 export const components = mdxComponents
 
 React Query supports [prefetching](https://react-query.tanstack.com/guides/prefetching), which allows you to make API calls to get your initial data on the server so that the first time your query is run (on the client or the server), it already has the data and never returns `undefined`.
@@ -17,39 +17,46 @@ In its [documentation](https://react-query.tanstack.com/guides/ssr) React Query 
 
 The code in this article will be specific to Next.js and React Query's [hydration](https://react-query.tanstack.com/guides/ssr#using-hydration) prefetch strategy, but the ideas presented here should be applicable to any application using React Query for SSR.
 
-> For anyone looking for a quick copy/paste win, here you go!
->
-> ```tsx
-> // utils/prefetch-queries.ts
->
-> import {dehydrate, type FetchQueryOptions, QueryClient, type QueryKey} from 'react-query'
->
-> export type QueryDefinition = {
->   queryKey: QueryKey
->   queryFn: () => any
->   options?: FetchQueryOptions<any, unknown, any, QueryKey>
-> }
->
-> /**
->  * Prefetch one or more queries on the page.
->  *
->  * @param queryDefinitions One or more objects containing `queryKey` and `queryFn` keys.
->  * `queryFn` must not take any arguments.
->  * @returns Spread the returned value of this function inside of the props object that
->  * is returned from `getServerSideProps()` or `getStaticProps()`.
->  */
-> export async function prefetchQueries(...queryDefinitions: QueryDefinition[]) {
->   const queryClient = new QueryClient()
->
->   const promises = queryDefinitions.map((queryDefinition) => {
->     const {queryKey, queryFn} = queryDefinition
->     return queryClient.prefetchQuery(queryKey, queryFn)
->   })
->   await Promise.all(promises)
->
->   return {dehydratedState: dehydrate(queryClient)}
-> }
-> ```
+<Aside>
+  For anyone looking for a quick copy/paste win, here you go!
+
+  <ShowMore client:load>
+
+    ```tsx
+    // utils/prefetch-queries.ts
+
+    import {dehydrate, type FetchQueryOptions, QueryClient, type QueryKey} from 'react-query'
+
+    export type QueryDefinition = {
+      queryKey: QueryKey
+      queryFn: () => any
+      options?: FetchQueryOptions<any, unknown, any, QueryKey>
+    }
+
+    /**
+      * Prefetch one or more queries on the page.
+      *
+      * @param queryDefinitions One or more objects containing `queryKey` and `queryFn` keys.
+      * `queryFn` must not take any arguments.
+      * @returns Spread the returned value of this function inside of the props object that
+      * is returned from `getServerSideProps()` or `getStaticProps()`.
+      */
+    export async function prefetchQueries(...queryDefinitions: QueryDefinition[]) {
+      const queryClient = new QueryClient()
+
+      const promises = queryDefinitions.map((queryDefinition) => {
+        const {queryKey, queryFn} = queryDefinition
+        return queryClient.prefetchQuery(queryKey, queryFn)
+      })
+      await Promise.all(promises)
+
+      return {dehydratedState: dehydrate(queryClient)}
+    }
+    ```
+
+  </ShowMore>
+</Aside>
+
 
 ## The starting point
 
