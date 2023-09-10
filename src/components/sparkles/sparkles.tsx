@@ -1,12 +1,12 @@
-import {useState} from 'react'
+import React from 'react'
 
 import {useRandomInterval} from '~/hooks'
-import {type HtmlProps, random} from '~/utils'
+import {random} from '~/utils'
 import {Sparkle} from './sparkle'
 
 const DEFAULT_COLOR = '#FFC700'
 
-export type SparklesProps = HtmlProps & {}
+export type SparklesProps = React.ComponentProps<'span'>
 
 /**
  * Add a little flare to some text or an image
@@ -15,7 +15,7 @@ export type SparklesProps = HtmlProps & {}
 export function Sparkles(props: SparklesProps) {
   const {color = DEFAULT_COLOR, children, ...delegated} = props
 
-  const [sparkles, setSparkles] = useState(() =>
+  const [sparkles, setSparkles] = React.useState(() =>
     Array(3)
       .fill(null)
       .map(() => generateSparkle(color)),

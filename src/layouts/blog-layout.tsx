@@ -1,11 +1,11 @@
-import type {ComponentProps} from 'react'
+import React from 'react'
 
 import {Title} from '~/components'
 import {HeroImage} from '~/page-components'
 import {Layout} from './layout'
 import {twMerge as cs} from 'tailwind-merge'
 
-export type BlogLayoutProps = ComponentProps<'div'> & {
+export type BlogLayoutProps = React.ComponentProps<'div'> & {
   title: string
   description?: string
   date?: Date

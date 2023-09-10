@@ -5,9 +5,16 @@
     width: 8px;
     height: 8px;
   }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: hsla(337, 3%, 50%, 0.5);
+    border-radius: 9999px;
+  }
 }
 
-.scrollbar *::-webkit-scrollbar-thumb {
-  background-color: hsla(337, 3%, 50%, 0.5);
-  border-radius: 9999px;
+.pre {
+  background: rgb(35, 36, 31) !important;
+  code {
+    background: none !important;
+  }
 }

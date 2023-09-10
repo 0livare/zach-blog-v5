@@ -1,4 +1,4 @@
-import {useEffect, useRef, useCallback} from 'react'
+import React from 'react'
 import {random} from '~/utils'
 
 /**
@@ -11,14 +11,14 @@ import {random} from '~/utils'
 export function useRandomInterval(callback: Function, args: {min: number; max: number}) {
   const {min, max} = args
 
-  const timeoutId = useRef<number | undefined>(undefined)
-  const callbackRef = useRef(callback)
+  const timeoutId = React.useRef<number | undefined>(undefined)
+  const callbackRef = React.useRef(callback)
 
-  useEffect(() => {
+  React.useEffect(() => {
     callbackRef.current = callback
   }, [callback])
 
-  useEffect(() => {
+  React.useEffect(() => {
     let isEnabled = typeof min === 'number' && typeof max === 'number'
     if (!isEnabled) return
 
@@ -34,6 +34,6 @@ export function useRandomInterval(callback: Function, args: {min: number; max: n
     return () => window.clearTimeout(timeoutId.current)
   }, [min, max])
 
-  const cancel = useCallback(() => window.clearTimeout(timeoutId.current), [])
+  const cancel = React.useCallback(() => window.clearTimeout(timeoutId.current), [])
   return cancel
 }

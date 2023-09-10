@@ -28,6 +28,7 @@ const {title, description, heroImage, date, author} = Astro.props
             heroImageSrc={heroImage}
             date={date}
             author={author}
+            client:load
           >
             <slot />
           </BlogLayout>
