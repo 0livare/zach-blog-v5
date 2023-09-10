@@ -1,0 +1,189 @@
+---
+title: Deploying a Node.js server that uses websockets
+description: Websockets are really cool for instances when you need real time communication between your users
+author: Zach Olivare
+date: 2022-06-30
+tags: node, websockets, svelte, backend, express
+heroImage: /images/blog/websockets.svg
+slug: deploy-websocket-server
+---
+
+I set out to build a cool [Jackbox](https://www.jackboxgames.com/)-style trivia game and along the way I learned a lot about websockets, HTTPS, and Digital Ocean. Unlike many of my posts, this article is going to focus on backend technologies as once you understand that the frontend becomes like any other web app for the most part. Specifically, I'm going to talk a lot about the specific process I used to get the backend server deployed and accessible over HTTPS (actually WSS, surprise!) to hopefully remove the some of the mystery for anyone else going through the process.
+
+## Websockets
+
+I decided to use a library called [socket.io](https://socket.io/) as a wrapper around my websockets code. It provides a bunch of really nice features:
+
+- A dead simple API
+- A fallback to HTTP long-polling if websockets can't be established
+- Automatic client reconnection
+- Ability to easily create multiple different "rooms"
+- Easy integration with [express.js](https://expressjs.com/)
+
+My initial socket.io/express server code looked like this:
+
+```js
+// server.js
+const express = require('express')
+const http = require('http')
+
+const app = express()
+const server = http.createServer(app)
+const io = require('socket.io')(server)
+const PORT = 3001
+
+io.on('connection', (socket) => {
+  console.log('User connected')
+})
+
+server.listen(PORT, () => {
+  console.info(`Listening on http://localhost:${PORT}`)
+})
+```
+
+## Deploying the server
+
+There are a lot of options out there for deploying a Node.js server. You can always spin up an AWS EC2 instance, or instead use a more tailored service like [Heroku](https://www.heroku.com/) or [render.com](https://render.com/).
+
+I chose to go with [Digital Ocean](https://www.digitalocean.com/) this time because they have a 60 day free trial, so these instructions are going to be pretty specific to them.
+
+### Create a droplet
+
+A droplet is what Digital Ocean calls an individual one of their virtual machines. They also have a "marketplace" of preconfigured VMs that you can use to not be starting from scratch (but so far as I know they're all free). The one we're interested in for this purpose is [the NodeJS one](https://marketplace.digitalocean.com/apps/nodejs), published by Digital Ocean themselves.
+
+Choose your CPU & data center options, and then decide to authenticate to it. You can choose either an SSH key or a password. The password is simpler but the SSH key is more secure. Your choice!
+
+Then go ahead and click the **Create Droplet** button at the bottom.
+
+### A note on PM2
+
+The[ NodeJS Marketplace App](https://marketplace.digitalocean.com/apps/nodejs) that we just used to configure out droplet comes with a tool called [pm2](https://pm2.keymetrics.io/docs/usage/quick-start) built in to manage the long-running processes for your server(s).
+
+If you're unfamiliar with it, here is a summary of a few of the most common commands that you'll need.
+
+> **Note** that for this instance specifically you'll need to run these commands as the `nodejs` user. To do so you can either prefix every `pm2` command with `sudo -u nodejs`, or you can switch from root to the nodejs user with `su - nodejs`.
+
+```bash
+# Start your server (assuming it's in the current directory and named server.js)
+pm2 start server
+# Stop your server
+pm2 stop server
+# Restart your server
+pm2 restart server
+
+# View a list of the currently running processes
+pm2 ls
+# View the output logs (useful when something crashes for some reason)
+pm2 logs
+# Display a really cool realtime dashboard directly in your terminal
+pm2 monit
+```
+
+### Get your code on the VM
+
+SSH into your new droplet VM by running `ssh root@<ip addr of vm>`. If you secured it with a password you'll have to enter that here.
+
+Once you're in, `cd` into `/var/www/html`, this is where you'll find `hello.js`, the default Node.js app that was preconfigured to run on this machine. This is also where you should clone your repository into. If for some reason you're not using source control, you can [directly upload files to the droplet](https://docs.digitalocean.com/products/droplets/how-to/transfer-files) using SFTP.
+
+> Some of the Digital Ocean documentation says you can clone it "anywhere", but nginx is pre-configured with its root at `/var/www/html` so things aren't going to work properly if you put your code outside of that directory.
+
+Now that your code is here:
+
+- `cd` down into the directory where your root server file lives
+- Install your dependencies (`npm i`, `yarn`, `pnpm i`, etc.)
+- Launch your app with `pm2 start ./server.js` (remember if you didn't switch to the nodejs user earlier, you'll have to prefix this command; `sudo -u nodejs pm2 start ./server.js`)
+- Then you'll need to map the port that your app runs on to an HTTP URL.
+
+  - To do this, open `/etc/nginx/sites-available/default` in your favorite termainal text editor
+  - You'll see a block near the bottom of the file that looks like this
+
+    ```nginx
+    location / {
+     proxy_http_version 1.1;
+     proxy_cache_bypass $http_upgrade;
+
+     proxy_set_header Upgrade $http_upgrade;
+     proxy_set_header Connection 'upgrade';
+     proxy_set_header Host $host;
+     proxy_set_header X-Real-IP $remote_addr;
+     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+     proxy_set_header X-Forwarded-Proto $scheme;
+
+     proxy_pass http://localhost:3000;
+     }
+    ```
+
+  - You can either duplicate that block, adding the copy right beneath it, or just edit that `proxy_pass` line to use port number that your server runs on (unless that happens to be 3000, then you're golden).
+
+- Kill the example `hello` Node.js app with `pm2 stop hello` (this is especially important if your app also runs on port 3000)
+- Run `sudo systemctl restart nginx` to enable your new nginx config
+- Run `pm2 save` to schedule your code to run at launch
+
+Test it out! You should now be able to access your server at `http://<ip addr of vm>`
+
+### Connecting to the server from your frontend
+
+Your frontend will need to use the [socket.io-client](https://www.npmjs.com/package/socket.io-client) library to to your socket.io backend. You'll also want to persist that connection somehow so that you're not reconnecting to the backend every time the user navigates to a new page in your app.
+
+```ts
+import {io, type Socket} from 'socket.io-client'
+
+let socket: Socket
+
+export function connect() {
+  if (socket) return socket
+  // 123.123.123.123 is a standin for the IP addr of your vm
+  socket = io('ws://123.123.123.123')
+  return socket
+}
+```
+
+> Notice the `ws://` protocol used here. This is the websocket protocol! Socket.io also allows you to specify an `http://` protocol here, but doing so will cause it to 100% of the time using HTTP long-polling, instead of using that as a backup strategy.
+
+### Adding SSL
+
+Security, the bane of devlopers and the savior of users. Because it's so good for your users, most platforms where you might want to deploy your frontend ([Vercel](https://vercel.com/) or [Netlify](https://www.netlify.com/) for example) do not allow you to deploy using HTTP, and require HTTPS.
+
+Digital Ocean has a [quite thorough blog post about adding HTTPS](https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-20-04), which you should absolutely read through. Here I'm just going to quickly summerize that what blog post explains in greater depth:
+
+1. Unfortunately you're going to need a domain name for this work. You can supposedly get a free domain name from [Freenom](https://www.freenom.com).
+1. Add an A record to your domain's DNS configuration that points to your server's public IP address. You probably _don't_ need `www.` here, but you could possibly use a subdomain of one of your domains so that you don't hog the whole thing just for a backend. To do so, just make the A record point to that subdomain.
+1. Install Certbot
+   ```bash
+   sudo apt install certbot python3-certbot-nginx
+   ```
+1. Add a `server_name` entry to an Nginx file. For simplicity I added it to `/etc/nginx/sites-available/default`, but you could instead create a specific one for this particulary domain. I'm not super informed about the tradeoffs of these two approaches.
+   ```bash
+   server_name example.com www.example.com;
+   ```
+1. Make sure your Nginx configuration is valid `sudo nginx -t`
+1. Reload Nginx to load your modified (or new) configuration: `sudo systemctl reload nginx`
+1. Use certbot to obtain an SSL certificate `sudo certbot --nginx -d example.com` (or if you are using a subdomain you would replace `example.com` with `yoursubdomain.yourdomain.com`).
+
+### Updating your frontend to communicate over SSL
+
+There's one last tricky bit here. Earlier we set our frontend to connect to the backend over the websockets protocol at `ws://123.123.123.123`. Just like HTTP becomes HTTPS when you add SSL, WS becomes WSS.
+
+So now that your backend is deployed to an HTTPS domain name, you're going to connect to it at `wss://example.com` (again if you used a subdomain just add that here).
+
+## Updating your code
+
+At some point you will update your server code and want to deploy those updates. Here is a quick summary of the commands necessary to log into your droplet and do so:
+
+```bash
+ssh root@<ip addr of vm> # SSH into droplet
+sudo -u nodejs           # Switch to nodejs user
+cd /var/www/html         # Change dirs to location of deployed nodejs apps
+ls                       # List available dirs
+cd <your project>        # Move into your project dir
+git pull --ff-only       # Update your local branch with changes to the remote
+pm2 restart server       # Restart your app with new code
+
+# ^^^ this last command assumes that the pm2 process for
+# your app is called "server".  Run `pm2 ls` to see a list
+# of the currently active processes.
+```
+
+## Wrap up
+
+That's it! I hope that was helpful if you would like to do something similar. I was intentionally very light on the specifics of the app that I built in this post, but you can find the source code for it [here](https://github.com/0livare/triviality).

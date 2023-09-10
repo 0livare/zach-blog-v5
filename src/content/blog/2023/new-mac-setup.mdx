@@ -1,0 +1,364 @@
+---
+title: How I setup a new Mac
+description: The perfect terminal, OS settings to build better apps, best Mac productivity apps, & more!
+author: Zach Olivare
+date: 2023-09-08
+tags: mac
+heroImage: /images/blog/mac-setup/mac-os-ventura-wallpaper.jpg
+published: true
+slug: new-mac-setup
+---
+
+When you get a new computer there are just so many things you have to do to get it ready for everyday use as a web developer. This is the list of things that I've found over the years work well for me, you can of course pick and choose which parts are right for you!
+
+## Terminal
+
+A complete terminal installation consists of:
+
+- a terminal emulation application _(what you type in)_ -- Hyper
+- a shell _(the prompt you're presented with)_ -- zsh
+- (optional) a custom shell framework _(a bunch of prepackaged shell customizations)_ -- oh-my-zsh
+- (optional) additional shell plugins
+
+### Install each piece of the terminal
+
+1. Download & install your terminal emulation application [Hyper][hyper]. Then make a few tweaks to `~/.hyper.js`:
+
+   - Make it copy selected text by default by setting `copyOnSelect: true`
+   - Prevent Hyper from making annoying sounds when `less` scrolls with `bell: false`
+
+1. Install [homebrew]
+
+   ```bash
+   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+   ```
+
+1. Install zsh
+
+   ```bash
+   brew install zsh zsh-completions
+   zsh --version
+   ```
+
+   - Make zsh your system's default shell:
+
+     ```bash
+     chsh -s $(which zsh)
+     echo $SHELL # /bin/zsh
+     ```
+
+1. Install oh-my-zsh
+
+   ```bash
+   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+   ```
+
+[hyper]: https://hyper.is
+[homebrew]: https://brew.sh
+
+### Install zsh plugins
+
+The two plugins we want are `zsh-nvm` and `zsh-syntax-highlighting`.
+
+> **Are these _zsh_ plugins or _oh-my-zsh_ plugins?**
+>
+> These plugins are both zsh plugins, and don't require oh-my-zsh to work. However, using oh-my-zsh gives us an easier method for installing and using the plugins. You can get more details from the [zsh-syntax-highlighting install guide](https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/INSTALL.md).
+
+First, clone both the plugins from GitHub into `~/.oh-my-zsh/custom/plugins`:
+
+```bash
+# zsh-nvm
+git clone https://github.com/lukechilds/zsh-nvm ~/.oh-my-zsh/custom/plugins/zsh-nvm
+
+#zsh-syntax-highlighting
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
+```
+
+Then tell oh-my-zsh how to find those plugins by adding them to the `plugins` declaration inside of `~/.zshrc`.
+
+```bash
+# in ~/.zshrc
+plugins=(git zsh-nvm zsh-syntax-highlighting)
+```
+
+### Install Hyper Extensions
+
+To install Hyper extensions, literally all you have to do is add them to the `plugins` array in your `~/.hyper.js` file!
+
+We want to install two extensions:
+
+1. `hypercwd` - This causes new terminal windows to be owned to the same directory as the previous window
+1. `hyperpower` - Adds a fun confetti animation to each keystroke
+   - Also, if you type `wow` (and press enter), it will become even more dramatic. Type `wow` again to disable.
+
+```js
+// in ~/.hyper.js
+plugins: ['hypercwd', 'hyperpower'],
+```
+
+You can find the full list of available Hyper extensions [here](https://hyper.is/plugins).
+
+### Install other useful cli tools
+
+1.  Use nvm to install the latest version of node
+
+    ```bash
+    nvm install node
+    nvm use node
+    node --version
+    ```
+
+1.  Install yarn v1
+
+    ```bash
+    brew install yarn
+    yarn --version # 1.22.19
+    ```
+
+1.  Install pnpm
+
+    ```bash
+    npm i -g pnpm
+    pnpm --version
+    ```
+
+1.  Install (the latest version of) git
+
+    ```bash
+    brew install git
+    git --version
+    ```
+
+    1. Copy the contents of my [gist](https://gist.github.com/0livare/4960a81addfbcdc48abfe855fae0af43) into `~/.gitconfig`
+
+    1. You might like to add these git(ish) aliases to `.zshrc`
+       ```bash
+       # in ~/.zshrc
+       alias k=git
+       alias a="git lsa"
+       alias s="git status"
+       alias sb="yarn storybook"
+       alias good="git bisect good"
+       alias bad="git bisect bad"
+       alias add="git add ."
+       alias p="pnpm"
+       alias lc="git lm head | pbcopy"
+       ```
+    1. You might also want to add quick aliases to automatically `cd` to paths of important projects. For example:
+
+       ```bash
+       # in ~/.zshrc
+       alias foo="cd ~/dev/foo"
+       ```
+
+1.  Install the [Delta diff tool](https://github.com/dandavison/delta)
+
+    - Delta makes the diffs in your terminal look almost as good as the diffs on GitHub.
+
+    ```bash
+    brew install git-delta
+    ```
+
+    1. Then tell git to use delta for diffs by adding it to your `~/.gitconfig`:
+
+       ```bash
+       [pager]
+         diff = delta
+         log = delta
+         reflog = delta
+         show = delta
+       ```
+
+    1. Test it out with `git show`
+
+    1. Sometimes terminal scrolling is broken after installing delta (see [here](https://github.com/dandavison/delta#mouse-scrolling)), to fix it, install the latest version of `less`:
+
+       ```bash
+       brew install less
+       brew link less
+       ```
+
+## Modify MacOS Defaults
+
+1. Make MacOS always show scrollbars
+
+   - Useful for web development. This is to ensure that your Mac scrollbar experience matches the Windows experience that most of your users will have.
+   - Set **System Settings → Appearance → Show scroll bars** to **Always**
+
+1. Correct how the tab key navigates in Firefox and Safari
+
+   - By default, MacOS only allows the keyboard tab key to focus certain elements. Those elements appear to include inputs and buttons, but explicitly does not include links, and potentially other elements. This completely breaks keyboard accessibility testing.
+   - To correct this you need to change an OS setting and a Safari setting
+     1. Toggle on **System Settings → Keyboard → Keyboard navigation**
+     1. Open Safari, then check **Safari Settings → Advanced → Press Tab to highlight each item on a webpage**
+
+1. Configure which system settings you would like to show in the Menu bar
+
+   - Open **System Settings → Control Center**
+   - You might like to set:
+     - Wi-Fi
+     - Bluetooth
+     - Sound
+     - Battery (with percent?)
+
+1. Show hidden files in Finder
+
+   - Open any Finder window and press ⌘⇧. _(CMD+shift+period)_ to display hidden files
+   - I also like to add the user `~` and `~/dev` (where I put all my code) folders to my Favorites in Finder
+
+1. Edit the default delays before the screen turns off
+
+   - **System Settings → Displays → Advanced**
+   - TODO: More specifics here
+
+1. Make calendar app _correctly_ show Monday as the first day of the week
+
+   - **SystemSettings → Language & Region → First day of week**: Monday
+
+1. Add keyboard shortcuts for deleting and archiving emails in the Mail app
+
+   - **System Settings → Keyboard → Keyboard Shortcuts → App Shortcuts**
+   - Click **+**, Choose **Mail** as the application, and then enter these two shortcuts:
+
+   <img
+     src="/static/images/blog/mac-setup/mac-mail-shortcuts.png"
+     alt="Mail>Delete=⌘+D, Mail>Archive=⌘+E"
+   />
+
+## Install Mac Apps
+
+Assuming this isn't your first Mac setup, start by looking through your previously downloaded apps in **App Store → Account (Your Name)**.
+
+With that out of the way, here is an incomplete list of wonderful Mac apps that you might consider adding to your collection:
+
+> For any of these apps that you want to launch at startup, be sure to go into their settings and check that box.
+
+1. [VS Code](https://code.visualstudio.com)
+
+   - In order to run `code` in the terminal, open VS Code, press **⌘⇧P** to open the Command Palette, type `shell command`, and choose the **Install** option.
+   - Also, assuming you've had a previous VS Code installation and enabled the settings sync feature, press **⌘⇧P** to open the Command Palette, type `sync now`, and hit **enter** to auto-download all your previous VS Code Extensions and re-apply your old settings (_such_ a time saver!).
+
+1. [Cleanshot X](https://cleanshot.com)
+
+   - A **much** improved version of the default Mac screenshot tool.
+     - It has so many features this app is worth 2-3x the $30 they're currently charging for it. This tool literally has a whole photo editor built into it that has become my go to for shitty meme editing. You don't know how much you need this until you try it. For real, take advantage of the 30-day money back trial and see what you're missing. It's under so much active development that after a year I paid the $19 to extend my updates for another year.
+     - For the record, this post is in no way sponsored by Cleanshot, I just love this tool (but I'll gladly take a sponsorship! haha)
+   - If you've already download Cleanshot on a different computer and want to move it to a new one, go to their [License Manager](https://licenses.cleanshot.com).
+
+1. [MeetingBar](https://meetingbar.app)
+
+   - This app solves a problem I had experienced for years. Finally a way to not be late to virtual meetings.
+   - Ever since I started working remotely I had the constant issue of:
+     - You can't control the meeting default reminder notifications (30m, 15m, 5m, etc.) on other people's meetings
+       - You can change them on a per-meeting basis, but that gets annoying real fast. And if they update the meting for any reason, your changes go out the window.
+     - The notification present most meetings is going to be either 10 or 15 minutes. Both of those are _more_ than enough time for me to continue working and completely forget about the meeting.
+     - _In comes MeetingBar_. You can set MeetingBar to notify you of all meetings exactly **1 minute** before the meeting. Then just click the MeetingBar notification and _boom_, you're in the meeting, EARLY even!
+   - 💡 Pro Tip: You can even program MeetingBar to automatically pause Spotify when you join a meeting.
+     - **Meeting Bar Preferences > Advanced > Run AppleScript when joining a meeting**
+       ```bash
+       # write your script here
+       tell application "Music" to pause
+       ```
+
+1. [Flycut](https://apps.apple.com/us/app/flycut-clipboard-manager/id442160987?mt=12)
+
+   - A simple, developer oriented clipboard manager.
+   - Being able to copy multiple things to my clipboard at a time, and not having to worry about them accidentally disappearing has had a really positive impact on my efficiency.
+     - Know you're going to need two separate bits of info from this page? Just copy them both and then you don't have to come back after you paste to copy the second one!
+
+1. [Itsycal](https://www.mowglii.com/itsycal)
+
+   - Unfortunately Mac OS doesn't provide an easy way to see a quick little calendar month view like Windows does. That's exactly what Itsycal is for. I don't use the calendar app integration, I just want to see the days of the month.
+   - Make sure to _correctly_ set Monday as the first day of the week in the settings
+   - In order to not waste Menu Bar space, I like to set up Itsycal to show the date, and the Mac OS clock to only show the time
+
+     > If you hold the **⌘ command** key, you can drag to re-order the icons in your Menu Bar.
+
+     <img
+       src="/static/images/blog/mac-setup/itsycal-menu-bar.png"
+       alt="MacOS Menu Bar - Itsycal shows Sep 9, Mac clock shows 12:04"
+     />
+
+1. [Magnet](https://itunes.apple.com/WebObjects/MZStore.woa/wa/viewSoftware?id=441258766&mt=12)
+
+   - Quickly snap windows to different portions of the screen
+   - This functionality should already be built into Mac OS, but is not unfortunately
+
+1. [PixelSnap](https://getpixelsnap.com)
+
+   - This app (made by the wonderful folks at Cleanshot) makes it really easy to measure the pixel size of any element on your screen. It's like what you already use the screenshot tool for, but better.
+   - If you do frontend web development this tool is for you. Go watch the [1m intro video](https://youtu.be/cB-2U-3B3dw).
+
+1. [Loom](https://www.loom.com)
+
+   - There are an endless number of ways to record your screen these days, but how many of them:
+     - Upload while you record for instant sharing
+     - Can be shared with a link
+     - Allow easy in-app editing to fix errors
+     - Automatically clips out filler words
+     - Can easily stitch multiple recordings together
+     - Sends you a notification of who watched your recording
+     - Gives you a "home base" that displays all your recordings in one place
+   - Well loom does! _(again not sponsored but accepting lol)_
+
+1. [Scroll Reverser](https://pilotmoon.com/scrollreverser)
+
+   - I like to scroll "naturally" with a trackpad (fingers bottom to top to scroll down) and "traditionally" (wheel top to bottom to scroll down) with a mouse.
+   - MacOS unfortunately doesn't allow distinguishing between mouse and trackpad when choosing to enable "natural" scrolling, but Scroll Reverser does!
+
+1. [Logitech Options](https://support.logi.com/hc/en-my/articles/360025297893)
+
+   - I exclusively use Logitech Mice, and this piece of software allows me to configure the mouse buttons to my liking.
+   - Options solves the "Scroll Reverser Problem" as well, but sometimes doesn't load right way so I still keep Scroll Reverser on hand as well.
+
+1. [Todoist](https://apps.apple.com/us/app/todoist-to-do-list-tasks/id585829637)
+
+   - The best simple-ish TODO app that I've found.
+   - It has:
+     - Distinct categories
+     - Due dates
+     - Easy to use
+     - Also has an iOS app and syncs content between the two
+
+1. Zoom
+
+   - Just putting this here just as a reminder to set the following settings:
+     - General → Copy invite link when starting a meeting: **On**
+     - General → Ask me to confirm when I leave a meeting: **Off**
+     - General → Add Zoom to macOS menu bar: **Off**
+     - Video → Stop my video when joining: **On**
+     - Audio → Mute my mic when joining: **On**
+
+1. Google Chrome
+
+   - Just putting this here as a reminder to disable the "let chrome track the shit out of you" settings.
+   - Navigate to **Chrome Settings → Privacy and security → Ad privacy** and set:
+     - Ad topics: **Off**
+     - Site-suggested ads: **Off**
+     - Ad measurement: **Off**
+
+> Several of these apps, along with other applications that you're likely to have on your computer require Accessibility permissions to work properly. And it's really annoying to forget to do this until later when you're trying to share you screen in a Zoom meeting only to find out that you have to "restart the app" to apply your new accessibility permissions!
+>
+> - **Privacy & Security → Microphone AND Camera **
+>   - Slack
+>   - Zoom
+>   - Discord
+> - **Privacy & Security → Accessibility**
+>   - 1Password
+>   - CleanShot X
+>   - Flycut
+>   - Logi Options
+>   - Loom
+>   - Magnet
+>   - PixelSnap
+>   - Scroll Reverser
+>   - Zoom
+> - **Privacy & Security → Input Monitoring**
+>   - Logi Options
+> - **Privacy & Security → Screen Recording**
+>   - CleanShot X
+>   - Discord
+>   - Loom
+>   - PixelSnap
+>   - Slack
+>   - Zoom

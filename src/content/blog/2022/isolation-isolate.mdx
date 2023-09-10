@@ -1,0 +1,39 @@
+---
+title: What does the isolation CSS property do?
+description: A little CSS magic that will improve your use of z-index
+author: Zach Olivare
+date: 2022-07-14
+tags: css, z-index
+heroImage: /images/blog/isolated.jpg
+slug: isolation-isolate
+---
+
+I'm glad you asked! This is a beautiful property because it does one thing and one thing only [<strike>killin' natzis</strike>](https://www.youtube.com/watch?v=SF-iGTocZPA&t=33s), wait no, it creates a stacking context!
+
+[Stacking context's](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Positioning/Understanding_z_index/The_stacking_context) are kinda complicated if you haven't come across them before, but one way of looking them is as a tool to group the stacking of all child elements into a single stack. So if something is on top of this stack (for example if another element is placed later in the DOM - things that come later are naturally placed on top of things that come before), then a stacking context guarantees that no item within the stack can be on top of anything that is on top of the stack.
+
+One common reason to explicitly create a stacking context is to make sure that dialogs and tooltips in your app are rendered on top of all other content, _regardless_ of which z indices are used. If `isolation: isolate` is placed on the `<main>` HTML element, and you render your modal **after** `<main>`, but still within `<body>` (perhaps by using a [Portal](https://reactjs.org/docs/portals.html)), then it is guaranteed that the modal will appear on top of **all** content within `<main>`.
+
+```html
+<style>
+  main {
+    isolation: isolate;
+  }
+</style>
+
+<body>
+  <main>
+    <p style="position: relative; z-index: 99999999">
+      Even though this paragraph has a crazy high z-index...
+    </p>
+  </main>
+
+  <div role="dialog">...this dialog will still render on top of the paragraph above</div>
+</body>
+```
+
+> I linked to React documentation for more information on the concept of a Portal, but that concept also exists in most other modern web frameworks.
+
+The `isolation: isolate` creates a "group" (stacking context) for all the children of the element it's applied to; `<main>` in our example here. So usage of z-index within `<main>` can reorder the layering of elements within the group, but can't affect layering outside of the group.
+
+Intelligent use of stacking contexts prevents the need for things like `z-index: 999999999`, which don't work half the time anyway because of all the places that stacking contexts are implicitly created (e.g. setting opacity to a value less than 1).

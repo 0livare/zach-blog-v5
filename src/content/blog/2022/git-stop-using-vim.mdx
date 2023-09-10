@@ -1,0 +1,62 @@
+---
+title: Why you should stop using Git's default text editor
+description: Use the text editor you're most comfortable with
+author: Zach Olivare
+date: 2022-03-03
+tags: git
+heroImage: /images/blog/git/git-no-vim.png
+slug: git-stop-using-vim
+---
+
+Whether you installed Git yourself, or you're using the version that came pre-installed on your OS, the default text editor will be Vim. Too often people leave this default and struggle through learning an un-intuitive text editor while they're also trying to learn Git.
+
+> If you're unsure what Vim is, it's that confusing command line interface that appears when you type `git commit`.
+
+Even worse, some can't distinguish Git from Vim, thinking that they're one in the same; because for many, their first time running `git commit` is also the first time they've seen Vim. The confusion of the text editor becomes muddled together with the confusion of learning Git, so they turn to a Git GUI tool and immediately lose so much of the power behind Git.
+
+<Sparkles>There is a better way!</Sparkles> And it's really easy!
+
+You can tell git to use whatever text editor you prefer. Then, when you run `git commit` or `git rebase -i`, instead of Vim opening in the terminal, your chosen text editor will pop up for you! You then edit the file, save the file, and close that window of your text editor.
+
+Done! &nbsp; ✅
+
+## Instructions
+
+The details change slightly depending on the text editor you want to use. I will provide info for several common text editors here.
+
+#### Using VS Code as your Git editor
+
+1. Open VS Code, open the command palette (cmd + shift + p), type **code**, and then select **Shell Command: Install 'code' command in PATH**.
+   - This will allow you to run `code` from the command line to open directories or files.
+1. Then run:
+
+```bash
+git config --global core.editor "code --wait"
+```
+
+#### Using Sublime Text as your Git editor
+
+```bash
+git config --global core.editor "subl -n -w"
+```
+
+#### Using Webstorm/IntelliJ as your Git editor
+
+1. From the menu bar, choose `Tools -> Create Command-line Launcher`. Accept the default path.
+1. Then run:
+
+```bash
+git config --global core.editor “webstorm -w”
+```
+
+#### Using Notepad++ as your Git editor (Windows)
+
+```bash
+git config --global core.editor "'C:/Program Files/Notepad++/notepad++.exe' -multiInst -notabbar -nosession -noPlugin"
+```
+
+<Aside variant="gray" className="mt-44">
+  p.s. I'm not saying that Vim is bad or that no one should use Vim as their Git text editor. If
+  you're fluent with Vim and can easily copy, delete, move, and jump around the file; by all means
+  Vim-on!
+</Aside>

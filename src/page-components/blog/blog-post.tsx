@@ -19,10 +19,10 @@
 //   return (
 //     <div className="relative">
 //       <Prose>
-//         {frontMatter.imageFilePath && (
+//         {frontMatter.heroImage && (
 //           // eslint-disable-next-line @next/next/no-img-element
 //           <img
-//             src={frontMatter.imageFilePath}
+//             src={frontMatter.heroImage}
 //             alt={frontMatter.title}
 //             width={736}
 //             height={384}

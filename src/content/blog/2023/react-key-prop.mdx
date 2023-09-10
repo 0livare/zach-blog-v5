@@ -1,0 +1,198 @@
+---
+# title: Everything you need to know about React's key prop
+# title: How to use React's key prop to your advantage
+title: How to make your app faster with React's key prop
+description: A puppy dies every time you set key={index}
+author: Zach Olivare
+date: 2023-04-10
+tags: react
+heroImage: /images/blog/react.png
+slug: react-key-prop
+---
+
+Every React element has a special `key` prop. It has a single purpose: ** to uniquely identify a React element**.
+
+There are two circumstances in which you as a React developer can use the `key` prop to your advantage:
+
+1. to prevent an element from being unnecessarily re-rendered _(the most common)_
+1. to force an element to be re-rendered _(advanced, used only in rare circumstances)_
+
+## Preventing unnecessary re-renders
+
+Far and away the most common and useful purpose of the `key` prop is to prevent unnecessary re-renders of a component that is created by mapping over an array.
+
+Using it usually looks something like this:
+
+```jsx
+function MyComponent({items}) {
+  return (
+    <ul>
+      {items.map((item) => (
+        <li key={item.id}>{item.name}</li>
+      ))}
+    </ul>
+  )
+}
+```
+
+👉 _But how does using `key` prevent unnecessary re-renders?_
+
+`key` prevents unnecessary re-renders by allowing React to determine that an element still exists, unchanged from the last render, it just may have moved.
+
+👉 _How does that work?_
+
+Remember that key's only purpose is **to uniquely identify a React element**. Every time each one of those `<li>` elements is rendered, React will do a "diff" (calculate the "difference") between the previous element that was rendered with a particular `key` and and current element that is being rendered with that key. If there is no difference between the two, React will not modify that element in the [DOM](https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model). If it does find a difference, React will unmount the previous component instance, create a new component instance, and mount that one instead.
+
+The `key` prop won't/can't/shouldn't do anything to prevent a component from re-rendering if it has changed. But it can & should prevent a component from re-rendering if it has only moved!
+
+👉 _Can you give a more concrete example?_
+
+What happens if you reverse the `items` array from the above snippet? Well, with our current code, React wouldn't create or destroy a single `<li>` element! It would simply re-arrange the existing `<li>`s to match the new order of the array. And how does React know where to place each element? Because of it's unique `key` of course!
+
+Moving existing DOM nodes is _much_ more performant than destroying and re-creating nodes.
+
+### The wrong way -- using index as the key
+
+Let's contrast our previous implementation to a very common, yet incorrect one:
+
+```jsx
+<ul>
+  {items.map((item, index) => (
+    {/* This is bad, don't set key to index */}
+    <li key={index}>{item.name}</li>
+  ))}
+</ul>
+```
+
+You'll see this `key={index}` in tutorials and production code alike, but its usage is lazy and has negative performance implications.
+
+> If you think it's your only solution, scroll down to the last section of this blog post. I promise there's a better way!
+
+The catch is though, that oftentimes those performance implications crop up later, well after the `key={index}` code was initially written.
+
+👉 _But why is `key={index}` bad?_
+
+If the contents of the array that you're mapping over is guaranteed never to change in any way, then there wouldn't be a performance hit caused by setting key to index.
+
+But in my experience, **there is almost no array (or code in general) that is guaranteed never to change in any way**.
+
+Sure, the code you're writing today has no way for the array to change. But what happens next month when product wants to...
+
+- add sort functionality to the UI?
+- allow the user to add items to the list?
+- delete items?
+- drag and drop to re-order items?
+- filter the list?
+- search for items in the list?
+
+**Every one of those features will be negatively impacted by** `key={index}`.
+
+The developer adding that new feature might be a different member of your team, and they might never have to touch the file that you wrote `key={index}` in, so they don't know about it. They just trusted you to do the right thing and you let them down 💔.
+
+👉 _Why is there a negative performance impact to `key={index}`?_
+
+Consider the scenario where one single item is inserted to the middle of the array.
+
+```jsx
+// before
+<li key={0}>Item 0</li>
+<li key={1}>Item 1</li>
+<li key={2}>Item 2</li>
+
+// after
+<li key={0}>Item 0</li>
+<li key={1}>---NEW ITEM---</li>
+<li key={2}>Item 1</li> // notice this element's key has changed
+<li key={3}>Item 2</li> // notice this element's key has changed
+```
+
+With `key` being set to index, the key of every element after the added element will change. So even though none of those elements have actually changed, they will all be unmounted and have duplicate elements re-created and re-mounted in their place, a process that takes infinitely longer than just leaving the DOM nodes alone and adding the new element ot the middle.
+
+This is equally true for sorting, filtering, searching, and every other type of operation listed in the bullets above.
+
+## Force an element to re-render
+
+We've gathered by now that when an React element's `key` changes, it is unmounted and a brand new component instance is created in its place.
+
+> I say "re-render" in the section title, but that is overly simplistic. Changing an element's `key` will not cause the same component instance to re-render. It will cause the existing component instance to be unmounted and eventually garbage collected. It then causes a brand new component instance to be created, and mounted.
+>
+> That process of creating a new component instance is definitely slower than a standard re-render, so again, use this pattern of "forceful re-rendering" sparingly and only when there are no better options.
+
+We've also seen that far and away the most common place to use `key` is inside of a `.map()` function. But it doesn't have to be inside of a map. `key` can exist on any React element.
+
+So if you need to force a component to "re-render" in a situation that it otherwise wouldn't one way to approach that problem is to force a change to its `key`.
+
+```jsx
+// WARNING: This is shitty code and for illustrative purposes only
+
+function MyComponent() {
+  const [key, setKey] = useState(0)
+
+  return (
+    // Every time onClick() fires, OtherComponent will be replaced
+    // with a completely new component instance, resetting any and
+    // all state it and any of its children maintain.
+
+    <OtherComponent key={key} onClick={() => setKey(key + 1)} />
+  )
+}
+```
+
+## What makes key so special?
+
+The `key` prop is special because it is one of only two props that are not accessible from within the component instance (the other being `ref`).
+
+{/* prettier-ignore */}
+```jsx
+<MyComponent key="foo" />
+
+function MyComponent(props) {
+  // props.key is undefined
+}
+```
+
+In fact, if you attempt to access `key` from within a component instance, you'll get a warning in your console:
+
+<img
+  src="/static/images/blog/react-key-prop/key-is-not-a-prop-trying-to-access-it-results-in-undefined.webp"
+  alt="Warning: key is not a prop. Trying to access it will result in `undefined` being returned. If you need to access the same value within the child component, you should pass it as a different prop."
+  width="100%"
+/>
+
+## But I don't have an id for this object 😭
+
+Inevitably, you'll run into a situation where you need to render a list of objects, but those objects don't come with prepackaged a unique identifier. Maybe they're coming from a third-party API, or maybe they're just a list of strings.
+
+In cases like that, there are still a few options:
+
+### Option 1: Generate a random id for each object
+
+If you're fetching a list of objects from an API and they don't have a unique identifier, you can just add one yourself.
+
+```js
+async function getMovies() {
+  const response = await fetch('http://example.com/movies.json')
+  const movies = await response.json()
+
+  // Add a unique id to each movie with Math.random()
+  return movies.map((movie) => ({...movie, id: crypto.randomUUID()}))
+}
+```
+
+And just like that, you have a unique identifier for each item!
+
+> **Note:** It's important that we're doing this process of assigning random ids _before_ we return the array of movies. If we were to do it inside of the `.map()` function in the component, we'd be generating a new id every time the component re-renders, which would defeat the purpose of having a unique id in the first place.
+
+### Option 2: Combine multiple properties into a key
+
+If none of your object's properties are guaranteed to be unique, but combined they are almost certain to be unique, that is usually good enough.
+
+```js
+async function getUsers() {
+  const response = await fetch('http://example.com/users.json')
+  const users = await response.json()
+
+  // Add a psuedo-unique id by combining multiple properties
+  return users.map((user) => ({...user, id: `${user.firstName}-${user.lastName}-${user.phone}`}))
+}
+```

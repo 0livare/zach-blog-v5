@@ -1,0 +1,165 @@
+---
+title: When to use each JavaScript iteration method
+description: And a practical guide to the reduce() function
+author: Zach Olivare
+date: 2023-04-17
+tags: js, array, map, forEach, reduce
+heroImage: /images/blog/js.png
+published: true
+slug: array-iteration
+---
+
+There are three primary methods to iterate over an array in JavaScript: `forEach`, `map`, and `reduce`. Each of these functions has its own use case, and it's important to understand the differences between them.
+
+## forEach
+
+The `forEach` method is the most basic of the three. It performs a simple iteration over an array, and doesn't return anything. As it's name implies, it is mostly equivalent to a [for...of](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...of) loop in JavaScript.
+
+Use `forEach` when:
+
+- You just want to loop over the array
+- Your callback function doesn't return anything
+- When you want to mutate (i.e. change something inside of) objects in the array
+  - e.g. `array.forEach((item) => item.foo = 'bar')`
+
+**DO NOT USE `forEach` WHEN:**
+
+- You want to `await` one or more promises
+  - `forEach` is synchronous, so it will not wait for the async function to finish before moving on to the next iteration (making the callback function `async` will not help)
+  - You have to decide whether you want to wait for the promises in **sequence** (one at a time), or in **parallel** (all at the same time).
+    - If you want to wait for the promises in **sequence**, use a [for...of](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...of) loop.
+      ```js
+      for (const item of items) {
+        const result = await myAsyncFunction(item)
+      }
+      ```
+    - If you want to wait for the promises in **parallel**, use `map()` to generate an array of promises, and then pass that to [Promise.all()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all)
+      ```js
+      const promises = items.map((item) => myAsyncFunction(item))
+      const results = await Promise.all(promises)
+      ```
+
+## map
+
+The `map` method transforms each element in the array. Its only argument is a callback function that takes the original array item and outputs a different array item.
+
+`map` returns a new array with the same length as the original array, but with each element transformed.
+
+```js
+const strings = ['0', '1', '2', '3', '4']
+const numbers = strings.map((str) => parseInt(str)) // [0, 1, 2, 3, 4]
+```
+
+Use `map` when:
+
+- You want to take each item in the array and transform it in some way
+
+**DO NOT USE `map` WHEN:**
+
+- You just want to iterate over the array. A simple iteration should be performed by `forEach` (or a for loop), not `map`.
+
+<Aside variant="warn">
+  Using <code>map()</code> when you should be using <code>forEach()</code> will make the next person
+  who reads this code think you forgot something.
+</Aside>
+
+## reduce
+
+The `reduce` method takes an array and **reduces it to a single value**. That single value is usually either an object or a number. Reduce tends to confuse people more than the other two, but 99% of the time `reduce` is used for one of two tasks.
+
+Use `reduce` when:
+
+1.  You want to sum up some numeric value contained in each item in the array
+    - This is happening when `0` is passed as the final argument to reduce
+2.  You want to transform the array into an object; indexing each item by some property
+    - This is happening when `{}` is passed as the final argument to reduce
+
+> I like to say that you should use `reduce` when it "feels" like you want to use `map`, but `map` won't work for your use case.
+
+The signature of `reduce` can also be intimidating because it usually has a big inline function, but without the inline function it just looks like this:
+
+```
+reduce(callback, initialValue)
+```
+
+The `callback` function is called once for each item in the array. It takes two arguments: `accumulator` and `currentValue`.
+
+- `accumulator`: Remember before when we said that `reduce()` reduces an array to a "single value"? That single value is the `accumulator`. Every iteration of the callback function has to return something. Whatever you return from the callback will be passed in as the `accumulator` for the next iteration of the callback function. That's how it "accumulates".
+
+- `currentValue` is just the current item in the array. It's common to change the name of this argument to something more descriptive, specific to your situation.
+
+### Example of (1): summing up a numeric value
+
+First, here is the classic example of using `reduce` to sum up an array of numbers:
+
+```js
+const numbers = [1, 2, 3, 4, 5]
+
+function add(a, b) {
+  return a + b
+}
+
+const sum = numbers.reduce(add, 0) // 15
+```
+
+> Notice how the array `[1, 2, 3, 4, 5]` has been "reduced" to a single value: `15`.
+
+> The first few times I saw an example like this, it looked like magic 🎩🐰🪄. It looks at first glance like reduce just somehow "knows" how to invoke the `add()` function. The light bulb moment comes when you realize that every value that `add()` returns is fed back into it as the `a` parameter on the next iteration. Here are the arguments `add()` is invoked with and what it returns on each iteration:
+>
+> ```
+> iteration 1: (0,  1) => 1 // 0 is the initial value passed to reduce(), 1 is the first item in the array
+> iteration 2: (1,  2) => 3 // 1 is the return value from the previous iteration, 2 is the next item in the array
+> iteration 3: (3,  3) => 6
+> iteration 4: (6,  4) => 10
+> iteration 5: (10, 5) => 15
+> ```
+
+But it's not often you have an array of numbers. It's usually an array of objects where each object has some numeric value that you want to sum up.
+
+```js
+const arr = [
+  {id: 'foo', value: 1},
+  {id: 'bar', value: 2},
+  {id: 'baz', value: 3},
+]
+
+const sum = arr.reduce((sum, item) => sum + item.value, 0)
+```
+
+It looks a little more complicated this time because of the inline function, but the only difference is that instead of just a number, we have an object with a numeric `value` property.
+
+### Example of (2): transforming an array into an object
+
+Finding an item in an array is an [O(n)](https://en.wikipedia.org/wiki/Big_O_notation) operation. If you have an array of 100 items, it could take 100 iterations to find the item you're looking for. For that reason, if you're going to be doing a lot of searching, it's common to transform an array into an object, indexed by your search value, so that you can find the value immediately (in constant, O(1), time), without going through the whole array.
+
+Let's transform this array into this object, so that we can search for each item by it's `id`.
+
+```js
+const array = [
+  {id: 'foo', value: 1},
+  {id: 'bar', value: 2},
+  {id: 'baz', value: 3},
+]
+
+const object = {
+  foo: {id: 'foo', value: 1},
+  bar: {id: 'bar', value: 2},
+  baz: {id: 'baz', value: 3},
+}
+```
+
+And that can be done with `reduce` like this:
+
+```js
+const object = array.reduce((accum, item) => {
+  accum[item.id] = item
+  return accum
+}, {})
+```
+
+<Aside variant="warn">
+<b>Make sure you return the accumulator from the callback function!</b>
+
+I make this mistake all the time. It's easy to forget that the arrow function in those summation examples automatically returns the value. But the same isn't possible in the array to object variation.
+
+</Aside>

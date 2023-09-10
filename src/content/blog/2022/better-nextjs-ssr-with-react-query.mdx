@@ -1,0 +1,276 @@
+---
+title: Better Next.js SSR with React Query
+description: How to use React Query to server side render in Next.js without code duplication
+author: Zach Olivare
+date: 2022-03-28
+tags: react, react-query, ssr
+heroImage: /images/blog/next-js-with-react-query.png
+slug: better-nextjs-ssr-with-react-query
+---
+
+React Query supports [prefetching](https://react-query.tanstack.com/guides/prefetching), which allows you to make API calls to get your initial data on the server so that the first time your query is run (on the client or the server), it already has the data and never returns `undefined`.
+
+In its [documentation](https://react-query.tanstack.com/guides/ssr) React Query demonstrates how to use this prefetching technique to allow for server-rendering components. However, that example is intentionally simplified. Its purpose is to demonstrate the feature clearly, not to be particularly clean or avoid repetition.
+
+The code in this article will be specific to Next.js and React Query's [hydration](https://react-query.tanstack.com/guides/ssr#using-hydration) prefetch strategy, but the ideas presented here should be applicable to any application using React Query for SSR.
+
+> For anyone looking for a quick copy/paste win, here you go!
+>
+> ```tsx--showMore
+> // utils/prefetch-queries.ts
+>
+> import {dehydrate, type FetchQueryOptions, QueryClient, type QueryKey} from 'react-query'
+>
+> export type QueryDefinition = {
+>   queryKey: QueryKey
+>   queryFn: () => any
+>   options?: FetchQueryOptions<any, unknown, any, QueryKey>
+> }
+>
+> /**
+>  * Prefetch one or more queries on the page.
+>  *
+>  * @param queryDefinitions One or more objects containing `queryKey` and `queryFn` keys.
+>  * `queryFn` must not take any arguments.
+>  * @returns Spread the returned value of this function inside of the props object that
+>  * is returned from `getServerSideProps()` or `getStaticProps()`.
+>  */
+> export async function prefetchQueries(...queryDefinitions: QueryDefinition[]) {
+>   const queryClient = new QueryClient()
+>
+>   const promises = queryDefinitions.map((queryDefinition) => {
+>     const {queryKey, queryFn} = queryDefinition
+>     return queryClient.prefetchQuery(queryKey, queryFn)
+>   })
+>   await Promise.all(promises)
+>
+>   return {dehydratedState: dehydrate(queryClient)}
+> }
+> ```
+
+## The starting point
+
+The React Query SSR guide described above provides the following example for how to use prefetching:
+
+```ts
+// pages/myPage.tsx
+
+import {QueryClient, dehydrate} from 'react-query'
+import {getPosts} from './get-posts'
+
+export async function getServerSideProps() {
+  const queryClient = new QueryClient()
+  await queryClient.prefetchQuery('posts', getPosts)
+
+  return {
+    props: {
+      // This gets passed to `<Hydrate>`s `state` prop
+      dehydratedState: dehydrate(queryClient),
+    },
+  }
+}
+```
+
+```ts
+// pages/_app.tsx
+
+import type {AppProps} from 'next/app'
+import {QueryClient, QueryClientProvider, Hydrate} from 'react-query'
+
+type MyAppProps = AppProps<{
+  dehydratedState?: any
+}>
+
+const queryClient = new QueryClient()
+
+export default function MyApp({Component, pageProps}: MyAppProps) {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Hydrate state={pageProps.dehydratedState}>
+        <Component {...pageProps} />
+      </Hydrate>
+    </QueryClientProvider>
+  )
+}
+```
+
+That's pretty simple, right? It is, but in my experience real world queries are more complicated than that.
+
+1. What happens when you need to prefetch those same data on multiple pages?
+2. Most queries end up having some kind of ID associated with them; `userId`, `fileId`, `documentId`, etc. That changes the structure of both the query key and the `getPosts` function.
+3. Once that ID gets included in the query key, you now have the structure of that key duplicated on every page where you prefetch those data.
+
+## Grouping the prefetch with the useQuery
+
+You can solve problems #1 & #2, and improve #3 by exporting an extra function in the same file that you create your `useQuery`:
+
+```ts
+// hooks/use-get-posts.ts
+
+import {useQuery, QueryClient, dehydrate, type UseQueryOptions} from 'react-query'
+import type {Post} from './types'
+import {getPosts} from '../api'
+
+export function useGetPosts(userId: string, options: UseQueryOptions<Post[] | null> = {}) {
+  return useQuery<Post[] | null>(['get-posts', userId], () => getPosts(userId), options)
+}
+
+export function prefetchPosts(userId: string) {
+  const queryClient = new QueryClient()
+  await queryClient.prefetchQuery(['get-posts', userId], () => getPosts(userId))
+  return {dehydratedState: dehydrate(queryClient)}
+}
+```
+
+```ts
+// api/posts.ts
+
+export function getPosts(userId: string) {
+  return fetch(`www.api.com/posts/${userId}`)
+}
+```
+
+```ts
+// pages/[userId]/posts.tsx
+
+import {type GetServerSidePropsContext} from 'next'
+import {prefetchPosts} from '../../hooks'
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const userId = context.params!.userId as string
+  const queryResults = await prefetchPosts(userId)
+  return {props: {...queryResults}}
+}
+```
+
+```tsx
+// pages/_app.tsx
+
+import type {AppProps} from 'next/app'
+import {Hydrate} from 'react-query'
+
+type MyAppProps = AppProps<{
+  dehydratedState?: any
+}>
+
+export default function MyApp(props: MyAppProps) {
+  const {Component, pageProps} = props
+  return (
+    <Hydrate state={pageProps.dehydratedState}>
+      <Component {...pageProps} />
+    </Hydrate>
+  )
+}
+```
+
+In my opinion, this is a big improvement over the previous solution!
+
+1. Query keys are no longer repeated throughout the entire app anywhere that needs to prefetch the query
+1. The `getServerSideProps()` function no longer needs to know about a bunch of React Query specific stuff like `QueryClient`, `dehydrate`, and the special prop name `dehydratedState`. It can instead just focus on the higher level work.
+
+But it's definitely not perfect:
+
+4. The query key (and query function) is still duplicated inside of the hook file.
+5. The query key also needs to be repeated inside of mutations where you want to optimistically update or cancel queries.
+6. **It is no longer possible to prefetch multiple queries on the same page!**
+   - That is almost certainly going to be a requirement for many applications
+7. Every query hook still has to know about the process of creating a `QueryClient` and also about the special `dehydratedState` prop name.
+
+## Isolate pieces of the query
+
+To solve for _problems #4 and #5_, let's break out the the query key and query function that are shared between `useGetPosts` and `prefetchPosts`.
+
+```ts
+// hooks/use-get-posts.ts
+
+// Generics omitted for brevity here
+export function useGetPosts(userId: string, options = {}) {
+  const {queryKey, queryFn} = getPostsQuery(userId)
+  return useQuery(queryKey, queryFn, options)
+}
+
+export function prefetchPosts(userId: string) {
+  const queryClient = new QueryClient()
+  const {queryKey, queryFn} = getPostsQuery(userId)
+  await queryClient.prefetchQuery(queryKey, queryFn)
+  return {dehydratedState: dehydrate(queryClient)}
+}
+
+// This is new! 👇
+export function getPostsQuery(userId: string) {
+  return {
+    queryKey: ['get-posts', userId],
+    queryFn: () => getPosts(userId),
+  }
+}
+```
+
+Boom, this code is now reasonably [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself)! But we still can't prefetch multiple queries on the same page and the code quickly becomes less DRY as more queries are added.
+
+## Final solution
+
+To fix _problem #6_ and allow for multiple queries on the same page we need to somehow allow usage of the same `QueryClient` between prefetches, because in the end we need all the data to be contained in a single `dehydratedState` object that we get from the `QueryClient`.
+
+We _could_ throw together a solution that instantiates the `QueryClient` back in the page again and passes it around, but then we're back to putting React Query specific code in the page itself.
+
+What if instead we took advantage of the fact that everything we need to prefetch the query is now contained in object returned by `getPostsQuery`? We can create a utility that accepts a list of those query "definitions" and shoves them all into the same `QueryClient`.
+
+That utility might look something like this:
+
+```ts
+// utils/prefetch-queries.ts
+
+import {dehydrate, type FetchQueryOptions, QueryClient, type QueryKey} from 'react-query'
+
+export type QueryDefinition = {
+  queryKey: QueryKey
+  queryFn: () => any
+  options?: FetchQueryOptions<any, unknown, any, QueryKey>
+}
+
+/**
+ * Prefetch one or more queries on the page.
+ *
+ * @param queryDefinitions One or more objects containing `queryKey` and `queryFn` keys.
+ * `queryFn` must not take any arguments.
+ * @returns Spread the returned value of this function inside of the props object that
+ * is returned from `getServerSideProps()` or `getStaticProps()`.
+ */
+export async function prefetchQueries(...queryDefinitions: QueryDefinition[]) {
+  const queryClient = new QueryClient()
+
+  const promises = queryDefinitions.map((queryDefinition) => {
+    const {queryKey, queryFn} = queryDefinition
+    return queryClient.prefetchQuery(queryKey, queryFn)
+  })
+  await Promise.all(promises)
+
+  return {dehydratedState: dehydrate(queryClient)}
+}
+```
+
+Creating this utility also nicely solves _problem #7_ by letting it be the only place in our app that creates a `QueryClient` (for the purposes of prefetching at least) and also the only place that knows about the `dehydratedState` prop (aside from where it's used for hydration).
+
+That utility can then be used like this:
+
+```ts
+// pages/[userId]/posts.tsx
+
+import {type GetServerSidePropsContext} from 'next'
+import {getPostsQuery, getFriendsQuery, getMessagesQuery} from '../../hooks'
+import {prefetchQueries} from '../../utils'
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const userId = context.params!.userId as string
+  const queryResults = await prefetchQueries(
+    getPostsQuery(userId),
+    getFriendsQuery(userId),
+    getMessagesQuery(userId),
+  )
+  return {props: {...queryResults}}
+}
+```
+
+> Don't forget that you need to add the `<Hydrate>` provider in `pages/_app.tsx` (as shown at the very beginning of this post).
+
+And that's it! I hope this helps you and your team find the perfect SSR solution with React Query. If you come up with a way to improve it, let me know [on Twitter](https://twitter.com/0livare)!

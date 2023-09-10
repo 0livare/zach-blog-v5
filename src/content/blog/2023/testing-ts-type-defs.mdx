@@ -1,0 +1,200 @@
+---
+title: How to test TypeScript type definitions with Jest
+description: You can add tests for your static TS types right next to your regular Jest tests
+author: Zach Olivare
+date: 2023-01-21
+tags: typescript, jest, testing
+heroImage: /images/blog/jest+ts.webp
+slug: testing-ts-type-defs
+---
+
+Have you ever toiled to get the TypeScript types just right on a particular function and thought to yourself, "I wish I could write a test to make sure that I don't break this type definition next time I edit this function"? Me too! In this post I'll give you thorough instructions on how you can do just that.
+
+## Setup
+
+The library we're going to use to execute these static type tests is one that I made called [jest-tsd](https://github.com/0livare/jest-tsd). It's a wrapper around [tsd](https://github.com/SamVerschueren/tsd) to make it really easy to use with Jest.
+
+1. Install [jest-tsd](https://github.com/0livare/jest-tsd) and its peer dependency.
+
+   ```bash
+   # With yarn
+   yarn add --dev jest-tsd @tsd/typescript
+   # Or with npm
+   npm i -D jest-tsd @tsd/typescript
+   # Or with pnpm
+   pnpm i -D jest-tsd @tsd/typescript
+   ```
+
+1. Exclude `.test-d.ts` files from your TypeScript compiler build.
+
+   - This is important because your type definition test files will intentionally add tests that throw TS compiler errors
+   - In your `tsconfig.json`, add:
+
+   ```json
+   "exclude": ["**/*.test-d.ts"],
+   ```
+
+1. Add a new Jest test for your type definitions
+
+   ```js
+   // src/init-translation.test.js
+
+   import {expectTypeTestsToPassAsync} from 'jest-tsd'
+
+   it('should not produce static type errors', async () => {
+     await expectTypeTestsToPassAsync(__filename)
+   })
+   ```
+
+## The Function Under Test
+
+I want to use a non-trivial example type definition in this post so that I can write some non-trivial type tests. The rest of this section is explaining how that function works, feel free to skip if you don't care.
+
+The function I've chosen here, `initTranslation` takes 1 or 2 arguments. Its purpose is to return a `translate` function that can be called to map a translation key to text that can be shown on a UI for a particular language or region. The optional second parameter provides a way to avoid defining the same UI string multiple times.
+
+```ts
+// src/init-translation.ts
+
+// Function type overload 1
+export function initTranslation<G extends Record<string, string>>(
+  genericDict: G,
+): (key: keyof G) => string
+
+// Function type overload 2
+export function initTranslation<G extends Record<string, string>, P extends Record<string, string>>(
+  genericDict: G,
+  createPageSpecificDict?: (link: (key: keyof G) => string) => P,
+): (key: keyof G | keyof P) => string
+
+// Actual function implementation that is generic enough to satisfy
+// the type constraints of all function type overloads.
+export function initTranslation(
+  genericDict: Record<string, string>,
+  createPageSpecificDict?: (link: (key: any) => string) => Record<string, string>,
+): (key: string) => string {
+  /* implementation */
+}
+```
+
+- The first argument is a dictionary object whose keys & values are all strings.
+- The second argument is a function with a `link()` param that returns a similar dictionary.
+  - The difference is that this second object can invoke the `link()` function as a value of the object.
+  - `link()` gets passed a key from the first parameter of `initTranslation` in order to reuse that already defined UI string.
+  - In the actual implementation, `link()` is secretly an identity function. Its only purpose is to provide strong typing of translation keys. Changing a linked key should throw a type error.
+
+Here's a simple example of how it might be used:
+
+{/* prettier-ignore */}
+```ts
+let translate = initTranslation(
+  {'foo.bar': 'Foobar'},
+  (link) => ({
+    'foo.baz': link('foo.bar'),
+    'one.two': '1 2',
+  }),
+)
+```
+
+> Here is the full implementation of the `initTranslation` function in case it's helpful to aid in understanding:
+>
+> ```ts--showMore
+> // src/init-translation.ts
+>
+> export function initTranslation(
+>   genericDict: Record<string, string>,
+>   createPageSpecificDict?: (link: (key: any) => string) => Record<string, string>,
+> ): (key: string) => string {
+>   const pageSpecificDict = createPageSpecificDict?.((key) => key)
+>   const fullDict = { ...genericDict, ...pageSpecificDict }
+>
+>   function translate(key: string): string {
+>     const val = fullDict[key] ?? ''
+>     const isLinkedKey = !!genericDict[val]
+>     return isLinkedKey ? translate(val) : val
+>   }
+>
+>   // Give access to raw dictionary if desired for unit tests
+>   translate.dictionary = fullDict
+>   translate.keys = Object.keys(fullDict)
+>
+>   return translate
+> }
+> ```
+
+## Writing a Type Definition test
+
+`jest-tsd` has a variety of [different assertions available](https://github.com/0livare/jest-tsd#assertions) to you. Here we'll make use of `expectType` and `expectError`.
+
+```ts
+// src/init-translation.test-d.ts
+
+import {expectType, expectError} from 'jest-tsd'
+import {initTranslation} from './init-translation'
+```
+
+First a series of tests for the single parameter version of `initTranslation`:
+
+```ts
+let translate1 = initTranslation({'foo.bar': 'Foobar'})
+
+// It should accept key defined in first param dictionary
+expectType<(key: 'foo.bar') => string>(translate1)
+
+// It should throw error for key not included in dictionary
+// TS Error - Argument of type '"123"' is not assignable to parameter of type '"foo.bar"'
+expectError(translate1('123'))
+```
+
+And then similar tests for the two param version:
+
+{/* prettier-ignore */}
+```ts
+let translate2 = initTranslation(
+  {'foo.bar': 'Foobar'},
+  (link) => ({
+    'foo.baz': link('foo.bar'),
+    'one.two': '1 2',
+  }),
+)
+
+// It should accept keys defined in either first or second param dictionary
+expectType<(key: 'foo.bar' | 'foo.baz' | 'one.two') => string>(translate2)
+
+// It should throw error for key not included in either dictionary
+// TS Error - Argument of type '"123"' is not assignable to parameter of type '"foo.bar" | "foo.baz" | "one.two"'
+expectError(translate2('123'))
+```
+
+Finally test to ensure that the `link()` function will only accept keys previously defined in the first param dictionary:
+
+{/* prettier-ignore */}
+```ts
+// Link function should only accept keys defined in first param dictionary
+expectError(initTranslation(
+  { 'foo.bar': 'Foobar' }, 
+  // TS Error - Argument of type '"one.one"' is not assignable to parameter of type '"foo.bar"'
+  (link) => ({ 'one.two': link('one.one') })
+))
+
+// Link function should not accept keys defined in second param dictionary
+expectError(
+  initTranslation({ 'foo.bar': 'Foobar' }, 
+  (link) => ({
+    'one.one': 'One',
+    // TS Error - Argument of type '"one.one"' is not assignable to parameter of type '"foo.bar"'
+    'one.two': link('one.one'),
+  })),
+)
+```
+
+## Tests in TypeScript?
+
+I can hear you saying, "but Zach, you made a big deal in your [post on Jest testing mistakes](/blog/js-testing-mistakes) saying that tests should always be written in JavaScript, not TypeScript!".
+
+And I absolutely stand by that. Writing tests in TS makes them harder to maintain over time and adds no value to the tests.
+
+The actual Jest test file described above is still written in JavaScript!
+
+## Conclusion
+
+Next time you take the time to write complicated generic types for some utility function in your shared code, I hope you'll also take a little time to write tests for those types!

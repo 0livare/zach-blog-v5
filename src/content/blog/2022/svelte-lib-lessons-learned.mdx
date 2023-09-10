@@ -1,0 +1,100 @@
+---
+title: What I learned from publishing a Svelte library
+description: The highs, the lows, the lessons learned
+author: Zach Olivare
+date: 2022-07-29
+tags: svelte, js, npm
+heroImage: /images/blog/svelte.png
+slug: svelte-lib-lessons-learned
+---
+
+I recently published the first version of [Formsvelte](https://www.npmjs.com/package/formsvelte), a complete form solution for Svelte; with an API inspired by [Formik](https://formik.org).
+
+Formsvelte is the first library that I've created for the ever-growing Svelte ecosystem, so I thought I would share some of my takeaways from that experience.
+
+## 1. SvelteKit takes all the work out of figuring out how to bundle a library
+
+Usually when you first sit down to write a new library, your first hour or two goes into configuring [Rollup](https://rollupjs.org) or some other bundler in a way that suits your needs. I started doing that, only to find out that SvelteKit has [built in support](https://kit.svelte.dev/docs/packaging) for packaging a library! 🎉
+
+## 2. You can use named exports, just not in the most obvious way
+
+I wanted my library to have named exports so that users could import all my components from a single path:
+
+```js
+import {MyComponent} from 'mylib'
+```
+
+A [couple](https://kit.svelte.dev/docs/packaging) different [resources](https://blog.logrocket.com/build-your-own-component-library-svelte/) that I found online mention "re-exporting" your components, but it was unclear if I needed an `index.ts` file or an `index.svelte` file. I wasn't sure how it would work with an `index.svelte` file and renaming the default during export didn't work either:
+
+```js
+// This doesn't work for a Svelte library!
+export {default as MyComponent} from './my-component.svelte'
+```
+
+I eventually [found](https://github.com/tomblachut/svelte-intellij/issues/48#issuecomment-678812773) that the solution is to first default import your components, and then export them; you can't do both in one step.
+
+```js
+// src/lib/index.ts
+
+import MyComponent from './my-component.svelte'
+import MyOtherComponent from './my-other-component.svelte'
+
+// Re-export Svelte components from your library
+export {MyComponent, MyOtherComponent}
+```
+
+## 3. You can't pass down stores as slot props
+
+I wanted to create a store within the context of a wrapper component and then pass that store down to child components via a [slot prop](https://svelte.dev/tutorial/slot-props). My thinking was that this could be like Svelte's version of React's render props:
+
+{/* TODO: Get svelte syntax highlighting to work */}
+
+```
+<!-- Wrapper.svelte -->
+<script>
+  const val = writable(0)
+  const context = {val}
+  setContext('mylib', context)
+</script>
+
+<slot val={val} />
+```
+
+```
+<!-- EndUser.svelte -->
+<Wrapper let:val>
+  {$val}
+</Wrapper>
+```
+
+It turns out though that that's not possible. There is [this bug](https://github.com/sveltejs/svelte/issues/5707) on the topic (that was closed in favor of other bugs that seem slightly different to me, but I'm sure the maintainers know what they're doing), and you also get this linting error when you try to do so:
+
+```
+Stores must be declared at the top level of the component (this may change in a future version of Svelte)
+svelte(contextual-store)
+```
+
+I'm hoping (as the linting error foreshadows) that this does change in a future version of Svelte. But in the mean time, I still haven't figured out how to get around this. It looks like it [might be possible](https://svelte.dev/repl/37699ffa336b444e884d592c6d867be6?version=3.37.0) to implement Svelte render props as a clunkier version of what I was trying to do with slot props, so that will be the next road I explore.
+
+## 4. Passing CSS classes to components is harder than it should be
+
+In my experience with building reusable components in JavaScript frameworks, I've found that one of the most important attributes is to make them easy to style. The primary mechanism for doing so is typically passing around CSS classes. There are two attributes of Svelte that make this difficult.
+
+1. Svelte has chosen to follow HTML in using `class=""` to declare CSS classes, rather than following the React path and using `className=""`. This is problematic in a JS framework of course because `class` is a reserved keyword in the language. In terms of Svelte, that means to allow passing a class to a component, it requires two statements instead of the usual one:
+
+   ```ts
+   let className: string | undefined = undefined
+   export {className as class}
+   ```
+
+   > This is the first design decision of Svelte that I've found that I disagree with. I'm holding out hope that the team may reconsider at some point and add this feature to the Svelte compiler; it could support both simultaneously!
+
+1. You can't pass class names declared in a Svelte component to a child component without making it global. This seems silly to me. With CSS modules it is perfectly fine to declare a class name in a particular module, import it into a component, and then pass that imported class down to any arbitrary child component. With Svelte's locally scoped class names, the same is not true.
+
+   - This functionality is described nearly verbatim (I swear I wrote the above before searching GitHub) in an extremely popular [GitHub issue](https://github.com/sveltejs/svelte/issues/2870)
+   - One of the Svelte maintainers (unfortunately) [responded](https://github.com/sveltejs/svelte/issues/2870#issuecomment-558822588) in that thread closing the issue and saying that they're never going to implement it
+   - There is a Svelte RFC for [adding CSS custom properties](https://github.com/sveltejs/rfcs/pull/13) to components. Though I don't fully understand yet why this has been determined to be a better solution or when/if it will ever be implemented?
+
+## 5. Svelte is really cool
+
+If you haven't tried it yet, take some time and thoughtfully go through the Codecademy style [tutorial](https://svelte.dev/tutorial/basics) that the Svelte team has clearly put a bunch of time into creating. It's a really delightful experience and gets you up and running quickly with all the "quirks and features" of the framework.

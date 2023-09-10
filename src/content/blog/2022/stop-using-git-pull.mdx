@@ -1,0 +1,95 @@
+---
+title: Why you should stop using git pull
+description: ...in its default form
+author: Zach Olivare
+date: 2022-05-26
+tags: git
+heroImage: /images/blog/git/git-no-pull.png
+published: true
+slug: stop-using-git-pull
+---
+
+{/* prettier-ignore */}
+{/* > tldr; In order to stop git pull from creating a secret 🥷 merge commit without you knowing about, run the following in your terminal:
+
+> ```bash--showMore
+> git config --global pull.ff only
+> ```
+>
+> \*/}
+
+If you ask most developers what `git pull` does, they'll usually say something along the lines of "it pulls down the latest code". But it actually does more than that. From the [docs](https://git-scm.com/docs/git-pull):
+
+> git-pull - _Fetch_ from **and** _integrate_ with another repository or a local branch
+
+Pulling is actually a two step process:
+
+1. `git fetch` - This what most people think pull does; it goes out to the remote and updates your local git with all of the changes that have happened on the remote since you last communicated with it.
+2. `git merge` - This is the dark side of pull that we want to avoid. If the branch that you're pulling is different on the remote than it is on your local, git (by default) will (_secretly 🥷_) create a merge commit that you probably don't want.
+
+## The Problem
+
+If someone else has updated your remote branch, you probably want to know about that and make a decision about how to deal with it, rather than just have git assume that you want to create a merge commit. For example, if someone has force updated the `main` branch and you run `git pull main`, you are going to create two sets of _almost_ duplicate commits when you (_secretly 🥷_) merge the old version of history with the new version.
+
+In practice, using `git pull` as part of your workflow will bloat your repository with many unnecessary merge commits and sometimes duplicate commits. _Especially_ if you're in the habit of running `git pull` on branches that are shared between multiple teammates.
+
+> Some Git providers (e.g. BitBucket) provide a "**Sync Now**" button (or similar) on their UI when your pull request gets out of date with the branch that it's being merged into. Behind the scenes, that button runs `git pull main` and will exhibit exactly the same issues described above.
+
+## The Solution
+
+Okay so you're hopefully convinced that running `git pull` can have some unintended consequences, but what do we do about it!? Run this:
+
+```bash
+git config --global pull.ff only
+```
+
+That git config setting essentially adds the `--ff-only` flag to the `git pull` command by default, which makes it safe to run! From [the docs](https://git-scm.com/docs/git-pull#Documentation/git-pull.txt---ff-only):
+
+> `--ff-only`: Only update to the new history if there is no divergent local history.
+
+Another way of phrasing that would be, "if the history of this branch has changed in such a way that a merge commit (or a rebase) would be necessary, then do nothing."
+
+## What happens when it breaks
+
+In the case where you do have a "divergent local history", Git will tell you that something went wrong and you'll have the freedom to choose how to deal with the situation. Specifically, it will tell you `fatal: Not possible to fast-forward, aborting`.
+
+When that happens, you've got a decision to make:
+
+- Have you just forgotten to update your remote lately? `git push`
+- Has someone else updated your remote?
+  - Do you have un-pushed changes to this same branch? `git cherry-pick` or `git rebase`
+  - Do you just want to accept their version of the branch? `git reset`
+
+## But this way is harder
+
+The reason that `git pull` works like it does by default is because it's easy. You don't have to make any decisions, and git can "fix" it for you automatically.
+
+But that simplicity has a big tradeoff, as Git itself acknowledges. In recent versions of Git, when you run `git pull` there is some warning text that is easily ignored:
+
+```
+hint: Pulling without specifying how to reconcile divergent branches is
+hint: discouraged. You can squelch this message by running one of the following
+hint: commands sometime before your next pull:
+hint:
+hint:   git config pull.rebase false  # merge (the default strategy)
+hint:   git config pull.rebase true   # rebase
+hint:   git config pull.ff only       # fast-forward only
+hint:
+hint: You can replace "git config" with "git config --global" to set a default
+hint: preference for all repositories. You can also pass --rebase, --no-rebase,
+hint: or --ff-only on the command line to override the configured default per
+hint: invocation.
+```
+
+The tradeoff is a much more confusing history of your repo. Adding all those extraneous merge commits makes it a lot harder to read the git history and understand what was done, by who, and in what order.
+
+<Aside variant="gray">
+  <h4 className="text-tbase text-lg">What about pull.rebase?</h4>
+
+You might have noticed in that git hint above that in addition to the default strategy and the one I'm suggesting here, there is a third option; <code>git config pull.rebase true</code>. As the hint suggests instead of (_secretly 🥷_) creating a merge commit this will (_secretly 🥷_) rebase your commits.
+
+While I think that is an improvement over the default, it's not perfect. It will definitely avoid the bloating merge commits from being added to your repo, but can still result in _almost_ duplicate commits being created if someone has force updated a branch that is shared between multiple teammates.
+
+Instead of _secretly 🥷_ doing anything, better to pause and let you make the best decision based on that particular situation.
+
+</Aside>

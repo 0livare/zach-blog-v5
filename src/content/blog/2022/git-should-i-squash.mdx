@@ -1,0 +1,75 @@
+---
+title: To squash or not to squash?
+description: Which merge strategy should your team use for PRs?
+author: Zach Olivare
+date: 2022-11-22
+tags: git
+heroImage: /images/blog/git/git-squash-vs-merge-commit.png
+slug: git-should-i-squash
+---
+
+## The Short Answer
+
+...is no. It is almost always better to merge PRs via a merge commit. Squashing has a lot of downsides and few benefits. But for teams that don't want to to take the time to ensure that all their members are comfortable using Git, squashing is better than the alternative of merging with reckless abandon.
+
+## What is squashing?
+
+Squashing commits in Git just means combining multiple commits into a single commit. This post is talking about a squashing [merge strategy](https://learn.microsoft.com/en-us/azure/devops/repos/git/merging-with-squash), which is a way of closing a Pull Request (PR) by combining all the commits in that PR into a single commit, and then plopping that single commit right on top of `main` (or whatever branch you're merging into).
+
+## Simplicity vs Usefulness
+
+A part of the choice of merge strategy is where you (and your team) fall on the Simplicity vs Usefulness spectrum. Are you willing to sacrifice having your Git history as a tool in your bug-fixing-toolbox in order to have a simpler workflow?
+
+Are you (and the other members of your team) willing to take the time to learn how to use your version control software of choice (Git) to get the most out of it? Or is ignorance bliss?
+
+## Drawbacks of Squashing
+
+When comparing squashing to a rebase-and-merge strategy, squashing is definitely a simpler workflow. And everyone can agree that squashing is better than the unusable merge nightmare that you get if you don't squash PRs _and_ no one cares about their Git commits.
+
+But squashing has trade offs that you don't have to make if you (and your team) can use Git for more than `add` and `commit`.
+
+Almost everyone agrees that Git commits should be [atomic](https://www.freshconsulting.com/insights/blog/atomic-commits); and squashing is the anthesis of atomic commits. Sometimes large PRs are unavoidable and squashing them creates horribly dense commits.
+
+In addition,
+
+- Squashing makes [git bisect](https://git-scm.com/docs/git-bisect) much less useful.
+  - Finding the commit that created a bug isn't very useful if that commit is thousands of lines long
+- Squashing makes it impossible to see the steps someone took to implement a feature.
+- Squashing makes it impossible to revert one part of a commit.
+- Squashing mashes together refactors with feature work.
+  - Yes, large refactors _should_ be separate PRs, but you're lying if you say that you always create separate PRs for small refactoring or cleanup. Doing so would be a waste of your and your reviewer's time.
+- Squashing makes it impossible to go down one road, decide that was the wrong approach, [revert](https://git-scm.com/docs/git-revert) it; but later still go back and still reference (or reuse) that code.
+
+> All of these points (and this whole post really) do assume that you [care about your git history](/blog/write-better-commit-messages) in the first place.
+
+## Benefits of Squashing
+
+Clearly, squashing your PRs has a lot of downsides. But I think it's fair to say that there are two benefits.
+
+### Your team doesn't have to learn more than the very basics of how to use Git
+
+In other words, squashing is dead simple and it's hard screw up.
+
+In my experience, a lot of developers are kind of afraid of Git. They look at it like a black box. They're afraid that if they do the wrong thing, they're going to mess things up for their whole team. When the reality is quite the opposite! Until you run `git push`, nothing you do in your terminal can have any effect on your teammates.
+
+### You can be lazy with your commits
+
+If you squash all your PRs, then the commits you make inside of that PR don't matter. You can have 9 `oopsie whoopsie`, `wip`, and `:derp:` commits (more on commit messages [here](https://www.posten.io/blog/write-better-commit-messages)) and you don't have to worry about your commits being atomic or separating your feature work from your refactoring, because all your commits are going to be essentially deleted when you merge your PR.
+
+> One caveat...it's nice to squash single commit PRs.
+>
+> That's because squashing a single commit doesn't lose any information, it will still end up as a single commit. But if you merge a single commit PR, you've now doubled the "size" of your PR without really getting any benefit.
+>
+> Merging one commit PRs obviously isn't the end of the world, it just makes your git history look a little funny.
+
+## You can make squash the default without mandating it
+
+If you set your repo's default merge strategy to be "squash", then the members of your team who aren't paying attention to their commits will just leave the default and squash all their PRs.
+
+Still leaving the option to create a merge commit though allows the developers who have taken the time to craft a useful commit history to be able to preserve that history in the `main` branch.
+
+## Conclusion
+
+If you have dozens of developers contributing to the same repo, or if you don't have confidence that your team could learn how to use the [git rebase](https://git-scm.com/docs/git-rebase) command, then squashing PRs might be your best bet.
+
+If on the other hand your team wants to take a little time and learn how to use the most popular version control system in the world (Git), then each team member and your repository itself will be better off for it in the long run.

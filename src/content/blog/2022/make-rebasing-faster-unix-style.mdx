@@ -1,0 +1,48 @@
+---
+title: Make Rebasing Faster...unix style
+description: An update to an old post that only worked on Windows
+author: Zach Olivare
+date: 2022-05-11
+tags: git, rebase, interactive
+heroImage: /images/blog/next-js-with-react-query.png
+slug: make-rebasing-faster-unix-style
+---
+
+Several years ago I wrote [a blog post](/blog/git-i) with the goal of creating an alias for `git rebase -i head~N`, which I have always found quite irksome to type. The post overall is a bit preachy, but I stand by the problem it was trying to solve and the solution it provided.
+
+## The Problem
+
+The solution I gave in that post used a [batch script](https://en.wikipedia.org/wiki/Batch_file), which will only work in Windows. In the intervening years, my development machine of choice has become a Mac, and my shell of choice ZSH.
+
+Since making the switch to Mac, I have honestly missed my `i N` alias for `git rebase -i head~N`, and I hadn't put in the time to figure out a unix way to handle it...until today!
+
+## The Solution
+
+The solution is frustrating simple. So simple that I deeply regret it taking me this long to figure it out.
+
+Open up your `~/.zshrc` and drop in the following function:
+
+```bash
+function i() {
+  git rebase -i head~$1
+}
+```
+
+Now reload your terminal, navigate to a git repository, and run `i 3`. Done ✅
+
+> I had no idea that [ZSH Functions](https://zsh.sourceforge.io/Intro/intro_4.html) wre a thing before now, but they seem pretty powerful!
+
+## Getting freaky with it
+
+I've found that almost every time I want to do a quick little interactive rebase it's so that I can add more changes to a previous commit (that's not the most recent commit in which case you would just use `commit --amend`).
+
+To make that process faster, the version of the `i` function that I use day to day actually looks like this:
+
+```bash
+function i() {
+  git add .                           # Stage all current changes
+  git tmp                             # Alias for `commit -nm 'WIP - incremental commit'`
+  incremented=$(($1+1))               # Increment the passed int by 1 (to account for the new commit)
+  git rebase -i head~$((incremented)) # Perform the interactive rebase
+}
+```

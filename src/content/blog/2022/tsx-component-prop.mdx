@@ -1,0 +1,101 @@
+---
+title: Strongly typing a React "component" prop
+description: Allowing customization of the root node of a React component & maintaining correct prop typing
+author: Zach Olivare
+date: 2022-10-19
+tags: react, typescript
+heroImage: /images/blog/react.png
+slug: tsx-component-prop
+---
+
+## What is the "component" prop?
+
+The [Material UI React Library](https://mui.com/) (MUI) introduced me a long time ago to this concept of a ["component" prop](https://mui.com/material-ui/guides/composition/#component-prop). The idea is to allow the user of a component to customize the DOM node that is used to render that component. For example say a `<List>` component by default renders a `<ul>` to the DOM. But your use case for the list is a site navigation, so you want to render a `<nav>` as the root DOM node instead. With MUI, all you would have to do is:
+
+```tsx
+<List component="nav">
+```
+
+But that's not all! You can also pass your own React component and have _IT_ rendered as the root node:
+
+```tsx
+function MyComponent(props: {children: ReactNode; foobar: 'foo' | 'bar'}) {
+  const {children, foobar} = props
+  return (
+    <div>
+      <p>Zach is cool: {foobar}</p>
+      {children}
+    </div>
+  )
+}
+
+<List component={MyComponent} foobar='bar'>
+```
+
+One of the beautiful things about doing so is that you can now pass any props that are specific to `MyComponent` to `<List component={MyComponent}>`, and they'll get passed through correctly. Not only that! But the props are strongly typed when passed to the List!!!
+
+## Replicating the "component" prop
+
+Over the years I have tried to replicate this component prop several times in component libraries that I've built. Replicating the JS functionality is simple enough, for example:
+
+```jsx
+function MyComponent(props) {
+  const {component: Component = 'div', ...rest} = props
+  return <Component {...rest} />
+}
+```
+
+But replicating the strong typing of doing so has (until today) eluded me. But here is my solution:
+
+```ts
+import React from 'react'
+
+export type MyComponentProps<C extends React.ElementType> = React.ComponentProps<C> & {
+  /**
+   * The component used for the root node.
+   * Either a string to use an HTML element or a component.
+   */
+  component?: C
+}
+
+export function MyComponent<C extends React.ElementType = 'div'>(props: MyComponentProps<C>) {
+  const {component: Component = 'div', ...rest} = props
+  return <Component {...rest} />
+}
+```
+
+> This is not exactly [how MUI does it](https://github.com/mui/material-ui/blob/master/packages/mui-material/src/Box/Box.d.ts). Their types are a lot more complicated, and I've never been able to understand them. If I had, it wouldn't have taken me this long to replicate their functionality 🙂
+
+Let's break this solution down. First, the props definition:
+
+- `type MyComponentProps<C ...>` - Declares a generic type, with a generic argument of `C`, which I chose to vaguely stand for "Component".
+- `<C extends React.ElementType>` - Puts a type constraint on `C`, saying that it must be either a string of an HTML element (e.g. "div", "a", "input", etc.), or a React component (e.g. MyComponent).
+- `React.ComponentProps<C>` - This is where a lot of the magic happens. This clever predefined React type returns the type of props for any component type. So `ComponentProps<typeof MyComponent>` works just as well as `ComponentProps<'div'>`.
+- `{component?: C}` - Declares the component prop itself, which must be of type `C` (which we earlier constrained to be either an HTML element string or a React component)
+
+And now the component itself:
+
+- `MyComponent<C extends React.ElementType ...>` - Very similar to above, this declares that this React component is generic (yes, they can be generic), and its generic type must be either an HTML element string or a React component
+- `<C ... = 'div'>` - Sets a default type for C for when the `component` prop is not explicitly passed (this must match the default value in the component implementation)
+- `props: MyComponentProps<C>` - The only use for a generic React component is to have generic props. The `C` here would be invalid if it had not already been declared on the component function earlier
+- `const {component: Component = 'div'} = props` - Finally, destructure the component prop from the rest, rename it to have a capital letter so that it is legal to instantiate as a JSX component, and assign the same default value here in the implementation as we did in the generic type
+
+## Example usage
+
+So now, if I create a simple component that accepts a prop named `foobar` that must be either "foo" or "bar", and pass that as the component prop of `MyComponent`...
+
+```tsx
+function Foobar(props: {foobar: 'foo' | 'bar'}) {
+  return <div>{props.foobar}</div>
+}
+
+return <MyComponent component={Foobar} />
+```
+
+...I can add the `foobar` prop to `MyComponent`, and my IDE autocompletes the value because typescript _KNOWS_ what it's supposed to be!
+
+![IDE typescript auto-completing the foobar prop on MyComponent](/static/images/blog/component-prop/auto-complete.png)
+
+And if I enter the wrong value, I get a type error:
+
+![IDE typescript error for invalid foobar prop](/static/images/blog/component-prop/type-error.png)

@@ -1,0 +1,207 @@
+---
+title: 8 JavaScript Testing Mistakes to Avoid
+description: In no particular order
+author: Zach Olivare
+date: 2022-04-26
+tags: js, ts, react, unit, testing
+heroImage: /images/blog/js-testing.png
+slug: js-testing-mistakes
+---
+
+## Mistake #1: Excessive mocking
+
+I've heard it said before that mocks are a code smell, but I disagree with that. Mocks are great, in moderation. It makes a lot of sense to mock out things like network calls or responses from a 3rd party library. Sometimes it also makes sense to mock your own modules in order to isolate the unit you're trying to test.
+
+But when a particular test starts requiring you to mock out multiple other modules, or when the amount of code dedicated to mocking rivals or exceeds the amount of code actually dedicated to testing in that file, something has gone wrong. Those tests have now become much, much harder to maintain than they otherwise would be.
+
+To fix this you either need to restructure your code to make it more testable, or write end-to-end tests to cover this module because it's not suitable for unit tests.
+
+## Mistake #2: Using enzyme
+
+Enzyme is [dead](https://dev.to/wojtekmaj/enzyme-is-dead-now-what-ekl).
+
+> tldr; it was a bumpy road for them to create a React 16 enzyme adapter, they never actually released an official React 17 adapter, and it is not possible to create a React 18 enzyme adapter without major changes to the code base that are [not going to happen](https://github.com/enzymejs/enzyme/issues/2524#issuecomment-860784387).
+
+Even before Enzyme died, React Testing Library was already well on its way to becoming the community standard (it is supported out of the box with [Create React App](https://create-react-app.dev/)) because unlike enzyme, Testing Library's API encourages you to avoid including component implementation details in your tests.
+
+## Mistake #3: Snapshot testing entire components
+
+Snapshot tests are very alluring because they give you a lot of output while requiring you to write very little code. Jest [says](https://jestjs.io/docs/snapshot-testing) that:
+
+> Snapshot tests are a very useful tool whenever you want to make sure your UI does not change unexpectedly.
+
+But unfortunately, that sense of security is a lie.
+
+First and foremost, jest is wrong to say that snapshots "make sure your **UI** does not change"; what they actually do is let you know when your <Sparkles>markup</Sparkles> changes. And it's not necessarily problematic that the markup of your component changed. There are an infinite number of changes that I can make to your markup without changing your UI at all. You know how else I can determine if your markup is going to change? By actually reading the source code.
+
+The other biggest problem with snapshots is that in real world applications they end up changing very frequently and quite dramatically. The diffs of snapshot files end up being so long that the people reviewing your code are 90% of the time going to completely ignore them, removing 100% of their value. And even when people do take the time to attempt to read your massive snapshot diff, what are they supposed to be looking for? It is an exercise in futility.
+
+> I made the title of this section about "entire components" instead of just "snapshot testing" because there is a newer way to use snapshots that I think is really neat and very effective; [inline snapshots](https://jestjs.io/docs/snapshot-testing#inline-snapshots). They are _inline_ because the snapshot is written directly into the source file instead of into a separate file. Basically it gives you the ability to write `expect().toBe()` tests without manually entering the expected result, and also gives you the ability to easily update those expected results if your code changes.
+>
+> They look something like this:
+>
+> ```js
+> it('formats integer', () => {
+>   expect(format.currency(1)).toMatchInlineSnapshot(`"$1"`)
+>   expect(format.currency(12)).toMatchInlineSnapshot(`"$12"`)
+>   expect(format.currency(123)).toMatchInlineSnapshot(`"$123"`)
+> })
+>
+> it('formats decimal', () => {
+>   expect(format.currency(0.12)).toMatchInlineSnapshot(`"$0.12"`)
+>   expect(format.currency(0.123)).toMatchInlineSnapshot(`"$0.12"`)
+>   expect(format.currency(0.129)).toMatchInlineSnapshot(`"$0.13"`)
+> })
+> ```
+>
+> The `toMatchInlineSnapshot()` function starts out blank and is automatically filled in with that string template when the test is executed.
+
+## Mistake #4: Writing tests in TypeScript
+
+TypeScript is great. Every single project that I create professionally or personally (this very website included) is written in TypeScript. However, writing your **tests** in TypeScript provides little to no value.
+
+In fact, more often than not your TypeScript test files end up having to define custom types of their own or do a bunch of funky typecasting in order to tell the TypeScript compiler to calm down and accept my fake data. Doing this makes the tests more difficult to maintain, harder to read, and simply creates cruft that does not add any value and has no reason to be there.
+
+For example, say you want to write a test to verify an error is thrown when a particular property is missing. Within your test you're going to have to `delete` that property, but if your test is written in typescript doing so will give an error; `The operand of a 'delete' operator must be optional.`. The TS error makes sense because you shouldn't ever do that in application code, but doing so makes perfect sense in test code!
+
+This is a minor point, but TypeScript tests also usually require more work to setup because they have to be compiled, and you always have to tell typescript to add all the global functions that your tests reference. It's not that these things are difficult, they're just more setup to do that again...adds no value to your project.
+
+## Mistake #5: Not making your assertions specific enough
+
+If your function under test returns an object (or receives an object, depending on your situation) but the subject of this particular test is just one value in that object, don't assert on the entire object. Instead narrow your assertion as much as possible, just to the value you care about.
+
+By only asserting on that one specific value, the only reason your test can fail is if the criteria defined in the test description is broken, not if something else, possibly even something that doesn't affect your outcome at all, happens to be broken.
+
+Don't do this:
+
+```js
+it('allows "from" to be customized', () => {
+  // Don't do this: This test could fail for many reasons
+  // other than what you're trying to test
+  expect(getEmailConfig()).toBe({
+    from: 'noreply@mail.com',
+    replyTo: {email: 'noreply@mail.com', name: 'Zach Olivare'},
+    attachments: [],
+    templateId: '5',
+  })
+})
+```
+
+Do this:
+
+```js
+it('allows "from" to be customized', () => {
+  expect(getEmailConfig().from).toBe('noreply@mail.com')
+})
+```
+
+With the former test, if `templateId` changes for whatever reason, the test will fail even though `templateId` has nothing to do with the stated purpose of the test; asserting that "it allows 'from' to be customized".
+
+> This idea still applies if you're asserting on a config object received as a parameter. A common use case is asserting that calling your function invokes a 3rd party function with the correct config:
+>
+> ```js
+> import {send} from 'mailsender'
+> import {sendEmail} from './send-email'
+> jest.mock('mailsender')
+>
+> it('allows "from" to be customized', () => {
+>   sendEmail()
+>   const payload = send.mock.calls[0][0]
+>   expect(payload.from).toBe('noreply@mail.com')
+> })
+> ```
+
+## Mistake #6: Not explicitly stating the test's expected outcome
+
+Test code is still code that has to be read, understood, and maintained by other developers. So just like any other piece of code, readability is a (possibly the highest) priority.
+
+If the expected value of your test is computed by a helper function defined in your test, it won't be immediately clear to someone else what output is supposed to happen. Instead of just being able to look at the test, the other dev now has to read and mentally compute the outcome of your helper function.
+
+And one could argue that the helper function _itself_ now needs a test!
+
+Don't do this:
+
+```js
+import {sendEmail} from './send-email'
+
+function getIsEnabled(toAddrs: string[]) {
+  return arr.some((o) => o.includes('@internal.com'))
+}
+
+it('is enabled for the internal domain', () => {
+  const to = ['foo@internal.com']
+
+  // Don't do this: it's hard to figure out exactly what the expected value
+  // is and the getIsEnabled() function practically needs a test of its own!
+  expect(sendEmail(to)).toBe(getIsEnabled(to))
+})
+```
+
+Do this:
+
+```js
+import {sendEmail} from './send-email'
+
+it('is enabled for the correct domain', () => {
+  expect(sendEmail(['foo@mail.com'])).toBe(true)
+})
+```
+
+## Mistake #7: Letting the environment your test runs in to change its outcome
+
+If your application code relies upon some environment variable like `process.env.NODE_ENV` (for example), don't let the value of that environment variable as your tests are running change the outcome of your tests.
+
+If your tests are run in (for example) `dev`, `staging`, and `prod` environments; the expected value of your tests shouldn't change as they're run in each successive environment. In fact, if you're following rule #6 it would be difficult to write such a test that passes in all three environments in the first place!
+
+Instead, mock that environment variable like you would any other uncontrolled input so that the results of your test are consistent regardless of the environment. If you need to, you can then restore the original value of the environment variable after your test completes.
+
+{/* prettier-ignore */}
+```js
+describe('environment: dev', () => {
+  beforeEach(() => (process.env.NODE_ENV = 'dev'))
+  it('does NOT send emails to external users', () => expect(sendEmail('a@external.com')).toBe(false))
+  it('DOES send emails to internal users',     () => expect(sendEmail('a@internal.com')).toBe(true))
+})
+describe('environment: staging', () => {
+  beforeEach(() => (process.env.NODE_ENV = 'staging'))
+  it('does NOT send emails to external users', () => expect(sendEmail('a@external.com')).toBe(false))
+  it('DOES send emails to internal users',     () => expect(sendEmail('a@internal.com')).toBe(true))
+})
+describe('environment: prod', () => {
+  beforeEach(() => (process.env.NODE_ENV = 'prod'))
+  it('DOES send emails to external users', () => expect(sendEmail('a@external.com')).toBe(true))
+  it('DOES send emails to internal users', () => expect(sendEmail('a@internal.com')).toBe(true))
+})
+```
+
+## Mistake #8: Having a describe() that wraps the entire test module
+
+<Aside variant="gray">
+  I admit that this final point is more just annoying than anything else.
+</Aside>
+
+If you've ever worked with me you already know that I really hate repeating myself. I try quite hard to make my code as [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself) as reasonably possible. So when I see duplication for the sake of duplication, I need to put a stop to it immediately.
+
+Here's an example:
+
+```js
+// get-link.test.js
+
+describe('get link handler', () => {
+  it('should do this', () => {})
+  it('should do that', () => {})
+})
+```
+
+What possible purpose could that `describe()` serve? When the test is run, this is the output
+
+```
+PASS  get-link.test.ts
+  get link handler
+    ✓ should do this (4 ms)
+    ✓ should do that (4 ms)
+```
+
+The exact same information is repeated on lines 1 and 2! For Pete's sake, just remove the pointless `describe()`.
+
+The only defense of this tactic that I've heard is that it makes the code consistent if you later add a second `describe()` in the file. But it would not make sense for `get-link.test.js` to have any tests in it that didn't test "get link"; so the only way it could have another `describe()` would be inside of the root one, in which case you can STILL remove the root one. <span className="text-2xl">🙃</span>

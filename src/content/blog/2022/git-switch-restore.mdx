@@ -1,0 +1,93 @@
+---
+title: New git commands to replace 'checkout'
+description: Git somewhat recently introduced two new commands, switch and restore
+author: Zach Olivare
+date: 2022-02-16
+tags: git
+heroImage: /images/blog/git/git-checkout.png
+slug: git-switch-restore
+---
+
+Git [somewhat recently](https://github.com/git/git/blob/master/Documentation/RelNotes/2.23.0.txt) introduced two new commands, [switch](https://git-scm.com/docs/git-switch) and [restore](https://git-scm.com/docs/git-restore). Together, these commands split up the functionality of the `git checkout` command.
+
+> Don't worry, `checkout` isn't going anywhere and you don't have to change your current workflows if you don't want to.
+>
+> People who are new to git may have an easier time understanding the purpose of these new commands than they would learning all the uses of checkout though, so it might still be worth your time to learn these new commands if you spend much time mentoring new devs.
+
+## The old way
+
+At first glance it might seem odd that these new commands aren't introducing any new functionality. But consider all the different types of things that the `checkout` command can do:
+
+```bash
+# Switch to an existing branch
+git checkout <branch>
+
+# Create a new branch (and switch to it)
+git checkout -b newBranch
+
+# Discard changes to a file
+git checkout -- <file>
+
+# Replace the contents of a file (with whatever's in main)
+git checkout main -- <file>
+```
+
+There are two categories of functionality happening in those examples:
+
+- The first two commands switch which branch you're on (`git switch`)
+- The second two commands replace the contents of files in your working directory (`git restore`)
+
+## The new way
+
+Here's how you would perform those same tasks using switch and restore:
+
+```bash
+# Switch to an existing branch
+git switch <branch>
+
+# Create a new branch (and switch to it)
+# -c is short for --create
+git switch --create newBranch
+
+# Discard changes to a file
+git restore <file>
+
+# Replace the contents of a file (with whatever's in main)
+git restore <file> --source main
+```
+
+## Bonus Tip
+
+The `restore` command also provides a (potentially more logical) new way to unstage files.
+
+```bash
+# The old way
+git reset HEAD <file>
+
+# The new way
+git restore --staged <file>
+```
+
+The old way used the `reset` command to copy from HEAD (your last commit) to the index (staging area). Because the HEAD and index now match, the change you made to the file only exists in your working directory, meaning the file is "unstaged".
+
+> The `reset` command defaults to the `--mixed` mode, which affects your HEAD and index. There is also `reset --soft` which only affects the HEAD (and leaves the index and working directory untouched), and `reset --hard` which moves the HEAD, index, and working directory.
+>
+> `reset --hard` is potentially destructive because it changes the working directory without committing or stashing it.
+>
+> For more on the reset command, there is a [fantastic section](https://git-scm.com/book/en/v2/Git-Tools-Reset-Demystified) of the git book on the topic.
+
+With the new way, you're stating that you want to "restore staged files" and by default, if &nbsp;`--staged` is given, the contents are restored from HEAD. The effect is the same as the old way, copying from HEAD to the index, "unstaging" the file.
+
+I've always felt that the old way was a roundabout way to accomplish unstaging a file, made extra confusing by the implied `--mixed`. The new way is still not the most clear thing in the world, but in my opinion it's in incremental improvement.
+
+To clear that up, you should create a git alias!
+
+```bash
+git config --global alias.unstage "restore --staged"
+```
+
+And then you can use it like this:
+
+```bash
+git unstage <file>
+```

@@ -1,0 +1,165 @@
+---
+title: How to write better commit messages
+description: You writing "fixed" is hurting your whole team
+author: Zach Olivare
+date: 2022-03-07
+tags: git
+heroImage: /images/blog/git/git-better-commit-messages.png
+published: true
+slug: write-better-commit-messages
+---
+
+If you haven't read Chris Beams' infamous [article](https://cbea.ms/git-commit/) about writing git commit messages, you should! That [and][1] [other][2] [similar][3] [posts][4] [are][5] [where][6] I pull many of my thoughts on the topic from. [XKCD] also has a fun comic on this topic.
+
+[1]: https://www.git-scm.com/book/en/v2/Distributed-Git-Contributing-to-a-Project#_commit_guidelines
+[2]: https://github.com/torvalds/subsurface-for-dirk/blob/master/README.md#contributing
+[3]: http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html
+[4]: http://who-t.blogspot.co.at/2009/12/on-commit-messages.html
+[5]: https://github.com/erlang/otp/wiki/writing-good-commit-messages
+[6]: https://github.com/spring-projects/spring-framework/blob/30bce7/CONTRIBUTING.md#format-commit-messages
+[xkcd]: https://xkcd.com/1296/
+
+The Beams article makes a lot of fantastic points and you should absolutely read it if you haven't already. He lays out seven rules, and I would add two more:
+
+1. Separate subject from body with a blank line
+2. Limit the subject line to 50 characters
+3. Capitalize the subject line
+4. Do not end the subject line with a period
+5. Use the <Asterisk text='As if you were giving a command, without suffixes like "ed" or "ing"'>[imperative mood](https://en.wikipedia.org/wiki/Imperative_mood)</Asterisk> in the subject line
+6. Wrap the body at 72 characters
+7. Use the body to explain what and why vs. how
+8. **Use [Conventional Commit](https://www.conventionalcommits.org/en/v1.0.0/#summary) prefixes at the beginning of the subject**
+9. **Do not use the word "and", the word "also", or a comma in the subject**
+
+In this post, instead of repeating what more articulate authors than I have already said, I'm going to talk about the motivations behind the aforementioned rules, explain my additions in more depth, and talk about the most common mistakes that I see developers make when writing commit messages.
+
+## Motivation
+
+The motivation behind each of the rules that involves the subject line can be summed up in a single word, <Sparkles>brevity</Sparkles> (also consistency, but I was trying to be brief). The goal is to communicate as much useful information as possible about what this commit does in the fewest number of characters.
+
+One could perhaps restate those rules as:
+
+<ol>
+  <li value="2">Get to the point already</li>
+  <li value="4">Don't waste one of your valuable 50 characters on useless punctuation</li>
+  <li value="5">Don't waste characters with pointless suffixes like "ing" or "ed"</li>
+</ol>
+
+## Rule #8
+
+8. Use [Conventional Commit](https://www.conventionalcommits.org/en/v1.0.0/#summary) prefixes at the beginning of the subject
+
+Conventional commits, in their own words are:
+
+> a lightweight convention on top of commit messages. It provides an easy set of rules for creating an explicit commit history; which makes it easier to write automated tools on top of. This convention dovetails with SemVer, by describing the features, fixes, and breaking changes made in commit messages.
+
+I have found that this convention makes commits clearer, while also encouraging them to be [atomic].
+
+[atomic]: https://www.freshconsulting.com/insights/blog/atomic-commits
+
+The first place that I came across this syntax was in the [Angular repo](https://github.com/angular/angular/commits/master), but a number of other well-known projects have also adopted the convention. For example:
+
+- [React Testing Library](https://github.com/testing-library/react-testing-library/commits/main)
+- [Lerna](https://github.com/lerna/lerna/commits/main)
+- [Electron](https://github.com/electron/electron/commits/main)
+- [yargs](https://github.com/yargs/yargs/commits/main)
+
+## Rule #9
+
+9. Do not use the word **"and"**, the word **"also"**, or a **comma** in the subject
+
+```
+chore(FOO-1003): extract network calls out of hooks, update hooks to meet codegen formatting
+fix build warnings wall of text related to babel, dependency resolution, and SVGR
+BAR-878 add audit request, rename collection
+add some documentation, extract useCancelOrRevokeDelegateInvite success messages into a function, introduced some state variables and refactored functions on Collaborator.tsx, fixed issue with pending ship not showing up for non-existing users
+styling updates to match mocks, fix pending chip not showing, fix car auth modal not coming up when approving
+```
+
+One of the biggest reasons that I think Conventional Commits are so important is that they force you (if you're not lying to yourself your team in your commit message) to make each commit [atomic].
+
+Having **"and"**, **"also"**, or a **comma** in your commit message means that your commit is not atomic, because it does at least two separate things.
+
+The solution here isn't to omit half of the message, but instead to separate that one commit into two or more individual commits, each with good commit messages of their own.
+
+## Common Mistakes
+
+### Justifications in the subject
+
+```
+chore: add support for PostCSS to Storybook, so that tailwind.css is not needed there either
+replace useIsMobile and useIsMedium with <Hidden mdDown> because the hooks always return false on the first render, leading to unnecessary rendering of a supposedly hidden component
+break avid into two flows, wizard redirect behavior for when there is a packageId changed to allow refreshing, add stepName as a route param -- goal is to give better refresh behavior
+```
+
+The subject should be used to explain in the fewest number of characters possible **what** you did, never **why** you did it. _Why_ should always be put in the body of the commit.
+
+If I want to know _why_ you did something, I'm already invested in it and I'm going to read the entirety of your commit message. No one needs to know _why_ you did something at a glance. They need to know _what_ you did at a glance.
+
+Also, by its very nature, _why_ will usually be lengthier than _what_, and you're not limited by the number of characters you can use in the body of the commit.
+
+### Never writing commit bodies
+
+Many developers simply never write more in a commit than fits in the subject. This is unfortunate because complex changes, or even simple changes that were tricky to make really deserve more explanation than that.
+
+- When you fixed a bug, what lead you to this solution?
+- Did you try other things first that didn't work?
+- Did you find the eventual solution somewhere online?
+  - Drop the link so that your teammates or future you can reference that later!
+- Was this feature particularly complicated? What problems did you encounter while writing it?
+- Is there anything that you know right now that might come in handy if you or a teammate ever needs to touch this code again?
+
+I estimate that one out of every four commits that I write has a body to explain _something_. So I am certain that you will also create the occasional feature that your teammates would benefit from you explaining further.
+
+### Repetitive ticket numbers
+
+Ticket numbers are really useful to have in your commit structure, but putting them in every commit wastes your valuable 50 characters and gets super repetitive.
+
+Similar to the _why_ piece of the commit message, if I want to know what ticket number a particular commit was involved with, I have no problem taking a few moments to quickly find that information, rather than having that information thrown in my face over, and over, and over again.
+
+Instead of including the ticket number in every commit, try only including it in the commit created when you merge your Pull Request (whether that be a merge commit or a squash commit). If you really must include the ticket number in every commit, try putting it in the body of the commit instead.
+
+### One or two word commit messages
+
+```bash
+fix ugly
+add test
+add search
+FOO-695
+init
+nvm
+lint
+moar
+some cleanup
+cleanup
+cool email haxxing
+wrong stage
+single bang
+add field
+should be everything
+rename stuff
+wip
+wip
+wip
+fix url
+:derp:
+people present
+fix payload
+better fix
+fix
+quick commit before meeting
+oopsie
+ugh
+i hope this is the last time
+push
+# These commits are from corporate production
+# repositories that I've seen over the years.
+```
+
+Looking at the above list of commits, how many of them can you tell what that commit did? How many of them can you even make a guess?
+
+Overly brief commit messages fail the one and only task of a commit message - _to tell you what the commit did!_
+
+Having something like `WIP` commit makes sense as you're working. Committing early and often make sure you never lose progress you've made. But before you ever make a Pull Request for those commits, you should have gone back and cleaned them up. Often that means squashing several WIP commits together into a single meaningful commit.
+
+> Details on editing commit history is outside the scope of this post, but it's usually done via either `git commit --amend` or `git rebase -i`.
