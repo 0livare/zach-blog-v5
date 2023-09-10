@@ -8,6 +8,8 @@ heroImage: /images/blog/js-testing.png
 slug: js-testing-mistakes
 ---
 
+import {Aside} from '~/components'
+
 ## Mistake #1: Excessive mocking
 
 I've heard it said before that mocks are a code smell, but I disagree with that. Mocks are great, in moderation. It makes a lot of sense to mock out things like network calls or responses from a 3rd party library. Sometimes it also makes sense to mock your own modules in order to isolate the unit you're trying to test.

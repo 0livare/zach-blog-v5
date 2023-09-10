@@ -18,11 +18,9 @@ const {pathname} = Astro.url
 <meta property="og:site_name" content="Zach's Blog" />
 <meta
   property="og:image"
-  content={src
-    ? 'https://www.olivare.net' + src
-    : 'https://www.olivare.net/static/images/home/zach.jpg'}
+  content={src ? 'https://www.olivare.net' + src : 'https://www.olivare.net/images/home/zach.jpg'}
 />
 <meta
   property="og:image:secure_url"
-  content={src || 'https://www.olivare.net/static/images/home/zach.jpg'}
+  content={src || 'https://www.olivare.net/images/home/zach.jpg'}
 />

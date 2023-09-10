@@ -1,3 +1,3 @@
-export * from './blog-post'
-export * from './markdown'
 export * from './prose'
+export * from './little-cubes'
+export * from './hero-image'

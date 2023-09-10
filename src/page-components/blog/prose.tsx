@@ -26,7 +26,7 @@ export function Prose(props: ProseProps) {
         textColorClass('prose-p'),
         textColorClass('prose-li'),
         'prose-img:rounded-lg',
-        'prose-pre:p-0 prose-code:bg-gray-400/25 dark:prose-code:bg-gray-600/ prose-code:p-1 prose-code:rounded ',
+        // 'prose-pre:p-0 prose-code:bg-gray-400/25 dark:prose-code:bg-gray-600/ prose-code:p-1 prose-code:rounded ',
         'prose-a:font-bold prose-a:text-blue-600 dark:prose-a:text-blue-300 prose-a:no-underline hover:prose-a:underline',
       )}
     />
