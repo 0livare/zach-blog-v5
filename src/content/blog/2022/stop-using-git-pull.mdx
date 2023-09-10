@@ -9,16 +9,8 @@ published: true
 slug: stop-using-git-pull
 ---
 
-import {Aside} from '~/components'
-
-{/* prettier-ignore */}
-{/* > tldr; In order to stop git pull from creating a secret 🥷 merge commit without you knowing about, run the following in your terminal:
-
-> ```bash--showMore
-> git config --global pull.ff only
-> ```
->
-> \*/}
+import {Aside, mdxComponents} from '~/components'
+export const components = mdxComponents
 
 If you ask most developers what `git pull` does, they'll usually say something along the lines of "it pulls down the latest code". But it actually does more than that. From the [docs](https://git-scm.com/docs/git-pull):
 

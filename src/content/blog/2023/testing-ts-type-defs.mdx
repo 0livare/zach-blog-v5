@@ -8,6 +8,9 @@ heroImage: /images/blog/jest+ts.webp
 slug: testing-ts-type-defs
 ---
 
+import {mdxComponents} from '~/components'
+export const components = mdxComponents
+
 Have you ever toiled to get the TypeScript types just right on a particular function and thought to yourself, "I wish I could write a test to make sure that I don't break this type definition next time I edit this function"? Me too! In this post I'll give you thorough instructions on how you can do just that.
 
 ## Setup
@@ -97,7 +100,7 @@ let translate = initTranslation(
 
 > Here is the full implementation of the `initTranslation` function in case it's helpful to aid in understanding:
 >
-> ```ts--showMore
+> ```ts
 > // src/init-translation.ts
 >
 > export function initTranslation(

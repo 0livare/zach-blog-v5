@@ -8,7 +8,8 @@ heroImage: /images/blog/azure-funcs/gremlin.png
 slug: azure-functions-gremlin
 ---
 
-import {Aside} from '~/components'
+import {Aside, mdxComponents} from '~/components'
+export const components = mdxComponents
 
 > Because of current limitations of Cosmos DB's Gremlin API, we'll see in this post that using the base gremlin NPM package is somewhat awkward and difficult. I've created a new library called [gremlin-cosmos](https://github.com/0livare/gremlin-cosmos) to make the interface between Gremlin and Cosmos more developer friendly.
 

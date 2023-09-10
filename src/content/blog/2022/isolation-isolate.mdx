@@ -8,6 +8,9 @@ heroImage: /images/blog/isolated.jpg
 slug: isolation-isolate
 ---
 
+import {mdxComponents} from '~/components'
+export const components = mdxComponents
+
 I'm glad you asked! This is a beautiful property because it does one thing and one thing only [<strike>killin' natzis</strike>](https://www.youtube.com/watch?v=SF-iGTocZPA&t=33s), wait no, it creates a stacking context!
 
 [Stacking context's](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Positioning/Understanding_z_index/The_stacking_context) are kinda complicated if you haven't come across them before, but one way of looking them is as a tool to group the stacking of all child elements into a single stack. So if something is on top of this stack (for example if another element is placed later in the DOM - things that come later are naturally placed on top of things that come before), then a stacking context guarantees that no item within the stack can be on top of anything that is on top of the stack.

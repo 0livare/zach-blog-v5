@@ -6,6 +6,9 @@ date: 2015-05-06
 tags: ios, ui
 ---
 
+import {mdxComponents} from '~/components'
+export const components = mdxComponents
+
 ## Context
 
 - In my application there is a timer, and I have variables for both the initial value of the timer `timerStartingValue` and the current value of the timer `timerValue` (which gets decremented as the timer counts down). In this way, when the timer is reset I know what to reset it to and I can also change this value during run time in the apps settings.

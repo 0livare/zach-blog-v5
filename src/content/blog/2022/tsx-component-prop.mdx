@@ -8,6 +8,9 @@ heroImage: /images/blog/react.png
 slug: tsx-component-prop
 ---
 
+import {mdxComponents} from '~/components'
+export const components = mdxComponents
+
 ## What is the "component" prop?
 
 The [Material UI React Library](https://mui.com/) (MUI) introduced me a long time ago to this concept of a ["component" prop](https://mui.com/material-ui/guides/composition/#component-prop). The idea is to allow the user of a component to customize the DOM node that is used to render that component. For example say a `<List>` component by default renders a `<ul>` to the DOM. But your use case for the list is a site navigation, so you want to render a `<nav>` as the root DOM node instead. With MUI, all you would have to do is:
