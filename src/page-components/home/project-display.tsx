@@ -1,7 +1,8 @@
 import type {HtmlHTMLAttributes, ReactElement} from 'react'
 import {twMerge as cs} from 'tailwind-merge'
 
-import {Button, OverflowCarousel} from '~/components'
+import {OverflowCarousel} from '~/components'
+import {ResumeButton} from './resume-button'
 
 export type ProjectDisplayProps = HtmlHTMLAttributes<HTMLDivElement> & {}
 
@@ -134,15 +135,7 @@ export function ProjectDisplay(props: ProjectDisplayProps) {
         </OverflowCarousel.Slide>
       </OverflowCarousel>
 
-      <div className="flex justify-center">
-        <Button
-          className="text-white mt-12 min-w-[200px]"
-          href="/static/zach-posten-resume-2021.pdf"
-          download
-        >
-          View resumé
-        </Button>
-      </div>
+      <ResumeButton />
     </div>
   )
 }
