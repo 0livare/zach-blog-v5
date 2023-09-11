@@ -27,14 +27,21 @@ export function Aside(props: AsideProps) {
         className,
       )}
     >
-      <div
-        className={'absolute top-0 left-0 rounded-full -translate-x-1/2 -translate-y-1/2 p-3'}
-        style={{background: 'var(--color-bg-primary)'}}
-      >
+      <div className={'absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2 p-3 w-14 h-14'}>
+        {/* Cut the corner off of the colored background */}
+        <div
+          className={'absolute top-0 left-0 w-full h-full rounded-full'}
+          style={{
+            background: 'var(--color-bg-primary)',
+            clipPath: `polygon(40% 50%, 100% 50%, 100% 100%, 40% 100%)`,
+          }}
+        />
+
         <Icon
           name={iconName || getIconName(variant)}
           size={32}
           className={cs(
+            'relative',
             variant === 'info' && 'text-blue-600 dark:text-blue-600',
             variant === 'warn' && 'text-yellow-500 dark:text-yellow-500',
             variant === 'error' && 'text-red-600 dark:text-red-600',
