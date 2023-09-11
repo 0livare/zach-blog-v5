@@ -20,7 +20,7 @@ export function MiniBio(props: MiniBioProps) {
     >
       <div className="flex-grow flex items-center">
         <div className="flex flex-col gap-4 justify-center max-w-3xl mx-auto items-start">
-          <SectionTitle>Frontend architect with backend experience</SectionTitle>
+          <SectionTitle>UI architect with backend experience, UX Advocate</SectionTitle>
           <p className="text-2xl text-navy px-4 max-w-2xl">
             My degree is in Software Engineering, but at my core, I am a problem solver. I love
             puzzles in all forms and I am constantly looking for new challenges.
