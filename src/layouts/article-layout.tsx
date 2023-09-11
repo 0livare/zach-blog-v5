@@ -4,6 +4,7 @@ import {Title} from '~/components'
 import {HeroImage} from '~/page-components'
 import {Layout} from './layout'
 import {twMerge as cs} from 'tailwind-merge'
+import {FormattedDate} from '~/components'
 
 export type ArticleLayoutProps = React.ComponentProps<'div'> & {
   title: string
@@ -11,10 +12,6 @@ export type ArticleLayoutProps = React.ComponentProps<'div'> & {
   date?: Date
   author?: string
   heroImageSrc?: any
-}
-
-function formatDate(date: Date) {
-  return date.toISOString().split('T')[0]
 }
 
 export function ArticleLayout(props: ArticleLayoutProps) {
@@ -32,7 +29,7 @@ export function ArticleLayout(props: ArticleLayoutProps) {
           {date && (
             <p className="text-sm italic text-right mb-3">
               {author && `${author} -- `}
-              {formatDate(date)}
+              <FormattedDate date={date} />
             </p>
           )}
           {description && (
