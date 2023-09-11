@@ -1,9 +1,9 @@
 ---
 import type {CollectionEntry} from 'astro:content'
 
-import {Navigation, Prose, HeroImage, LittleCubes} from '~/page-components'
+import {Navigation, Prose, LittleCubes} from '~/page-components'
 import BaseHead from '../components/BaseHead.astro'
-import {BlogLayout} from './blog-layout'
+import {ArticleLayout} from './article-layout'
 
 type Props = CollectionEntry<'blog'>['data']
 
@@ -20,19 +20,19 @@ const {title, description, heroImage, date, author} = Astro.props
 
     <main>
       <LittleCubes />
-      <article>
-        <Prose>
-          <BlogLayout
-            title={title}
-            description={description}
-            heroImageSrc={heroImage}
-            date={date}
-            author={author}
-          >
-            <slot />
-          </BlogLayout>
-        </Prose>
-      </article>
+      <Prose>
+        <ArticleLayout
+          title={title}
+          description={description}
+          heroImageSrc={heroImage}
+          date={date}
+          author={author}
+        >
+          <slot />
+        </ArticleLayout>
+      </Prose>
     </main>
+
+     ./article-layout
   </body>
 </html>

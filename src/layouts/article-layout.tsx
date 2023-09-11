@@ -5,7 +5,7 @@ import {HeroImage} from '~/page-components'
 import {Layout} from './layout'
 import {twMerge as cs} from 'tailwind-merge'
 
-export type BlogLayoutProps = React.ComponentProps<'div'> & {
+export type ArticleLayoutProps = React.ComponentProps<'div'> & {
   title: string
   description?: string
   date?: Date
@@ -17,7 +17,7 @@ function formatDate(date: Date) {
   return date.toISOString().split('T')[0]
 }
 
-export function BlogLayout(props: BlogLayoutProps) {
+export function ArticleLayout(props: ArticleLayoutProps) {
   let {children, className, title, description, date, author, heroImageSrc, ...rest} = props
 
   return (
@@ -45,7 +45,7 @@ export function BlogLayout(props: BlogLayoutProps) {
         <div className="mb-12 md:mb-24" />
       </div>
 
-      {children}
+      <article>{children}</article>
     </Layout>
   )
 }
