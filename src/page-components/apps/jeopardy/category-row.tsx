@@ -1,8 +1,8 @@
-import React, {HtmlHTMLAttributes} from 'react'
+import React from 'react'
 
 import {CategoryTile} from './category-tile'
 
-export type CategoryRowProps = HtmlHTMLAttributes<HTMLTableRowElement> & {
+export type CategoryRowProps = React.ComponentProps<'tr'> & {
   colCount: number
 }
 

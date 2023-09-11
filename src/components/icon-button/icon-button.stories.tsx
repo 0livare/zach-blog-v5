@@ -18,25 +18,25 @@ const Template: ComponentStory<typeof IconButton> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  children: <Icon name="heart" />,
+  children: <Icon name="Heart" />,
 }
 
 export const XLarge = Template.bind({})
 XLarge.args = {
-  children: <Icon name="heart" size={72} />,
+  children: <Icon name="Heart" size={72} />,
 }
 
 export const OtherColor = Template.bind({})
 OtherColor.args = {
-  children: <Icon name="heart" color="red" />,
+  children: <Icon name="Heart" color="red" />,
 }
 
 export const Filled = Template.bind({})
 Filled.args = {
-  children: <Icon name="heart" color="limegreen" filled />,
+  children: <Icon name="Heart" color="limegreen" filled />,
 }
 
 export const FilledWithOtherColor = Template.bind({})
 FilledWithOtherColor.args = {
-  children: <Icon name="heart" fill="red" />,
+  children: <Icon name="Heart" fill="red" />,
 }

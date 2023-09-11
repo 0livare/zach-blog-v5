@@ -57,7 +57,7 @@ export function SearchInput(props: SearchInputProps) {
           }}
           className="flex-none hover:bg-blue-300 dark:hover:bg-teal-soft w-6 h-6 rounded-full flex justify-center items-center my-auto"
         >
-          <Icon name="x" />
+          <Icon name="X" />
         </button>
       </div>
       <button

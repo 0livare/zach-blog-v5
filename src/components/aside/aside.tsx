@@ -57,14 +57,14 @@ export function Aside(props: AsideProps) {
 function getIconName(variant: AsideProps['variant']): IconProps['name'] {
   switch (variant) {
     case 'info':
-      return 'info'
+      return 'Info'
     case 'warn':
-      return 'alert-triangle'
+      return 'AlertTriangle'
     case 'error':
-      return 'x'
+      return 'X'
     case 'gray':
-      return 'coffee'
+      return 'Coffee'
     default:
-      return 'info'
+      return 'Info'
   }
 }

@@ -1,8 +1,7 @@
-import {ButtonHTMLAttributes} from 'react'
-
+import React from 'react'
 import {twMerge as cs} from 'tailwind-merge'
 
-export type IconButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {size?: number | string}
+export type IconButtonProps = React.ComponentProps<'button'> & {size?: number | string}
 
 export function IconButton(props: IconButtonProps) {
   let {className, children, style = {}, size = 24, ...rest} = props

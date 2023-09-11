@@ -1,9 +1,9 @@
-import {HtmlHTMLAttributes} from 'react'
+import React from 'react'
 import {twMerge as cs} from 'tailwind-merge'
 
 import styles from './neon-text.module.scss'
 
-export type NeonTextProps = HtmlHTMLAttributes<HTMLDivElement> & {
+export type NeonTextProps = React.ComponentProps<'div'> & {
   component?: string
 }
 

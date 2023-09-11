@@ -27,9 +27,9 @@ export function Jumbotron(props: JumbotronProps) {
           <hr className="h-0.5 w-24 bg-white mt-6 mb-4" />
           <h2 className="text-white uppercase text-lg">Software Engineer</h2>
           <div className="flex justify-center items-center mt-10 gap-4 pointer-events-auto">
-            <SocialLink to="http://www.github.com/0livare" icon="github" />
-            <SocialLink to="http://www.twitter.com/0livare" icon="twitter" />
-            <SocialLink to="http://www.linkedin.com/in/olivare" icon="linkedin" />
+            <SocialLink to="http://www.github.com/0livare" icon="Github" />
+            <SocialLink to="http://www.twitter.com/0livare" icon="Twitter" />
+            <SocialLink to="http://www.linkedin.com/in/olivare" icon="Linkedin" />
           </div>
         </div>
       </div>

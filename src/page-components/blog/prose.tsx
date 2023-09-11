@@ -4,7 +4,7 @@ import {twMerge as cs} from 'tailwind-merge'
 import {textColorClass} from '~/utils'
 import markdownStyles from './markdown.module.scss'
 
-export type ProseProps = React.HtmlHTMLAttributes<HTMLDivElement>
+export type ProseProps = React.ComponentProps<'div'>
 
 /**
  * Styles for generated html using @tailwindcss/typography

@@ -1,6 +1,6 @@
-import {HtmlHTMLAttributes, RefObject} from 'react'
-
+import React from 'react'
 import {twMerge as cs} from 'tailwind-merge'
+
 import {Icon} from '../icon'
 import {IconButton} from '../icon-button'
 import {useOverflowCarouselContext} from './context'
@@ -26,13 +26,13 @@ export function OverflowArrowButton(props: OverflowArrowButtonProps) {
       )}
     >
       <IconButton {...rest} tabIndex={-1} onClick={handleClick}>
-        <Icon name={direction === 'left' ? 'arrow-left' : 'arrow-right'} color="currentColor" />
+        <Icon name={direction === 'left' ? 'ArrowLeft' : 'ArrowRight'} color="currentColor" />
       </IconButton>
     </div>
   )
 }
 
-export type OverflowArrowButtonProps = HtmlHTMLAttributes<HTMLElement> & {
+export type OverflowArrowButtonProps = React.ComponentProps<'button'> & {
   direction: 'left' | 'right'
-  scrollerRef: RefObject<HTMLElement>
+  scrollerRef: React.RefObject<HTMLElement>
 }

@@ -1,9 +1,8 @@
-import {HtmlHTMLAttributes, ReactNode} from 'react'
-
+import React from 'react'
 import {twMerge as cs} from 'tailwind-merge'
 
-export type SectionTitleProps = HtmlHTMLAttributes<HTMLHeadingElement> & {
-  children: ReactNode
+export type SectionTitleProps = React.ComponentProps<'h3'> & {
+  children: React.ReactNode
 }
 
 export function SectionTitle(props: SectionTitleProps) {
