@@ -1,0 +1,35 @@
+---
+import path from 'path'
+import fs from 'fs/promises'
+
+import BaseHead from '../../components/base-head.astro'
+import {Navigation, LittleCubes, WordleSolver} from '~/page-components'
+import {Title} from '~/components'
+
+const title = 'Worlde Solver'
+const description =
+  'Type the words you have so far, then click the tiles to turn them green or yellow. The suggestions are ranked based on which word will eliminate the most remaining possibilities.'
+
+const filePath = path.join(process.cwd(), 'src', 'content', 'wordle', '_wordle-words-ranked.txt')
+const buffer = await fs.readFile(filePath)
+const allPossibleWords = buffer.toString().split('\n')
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead title={title} description={description} />
+  </head>
+
+  <body>
+    <LittleCubes />
+    <Navigation />
+
+    <main class="max-w-6xl mx-auto">
+      <div class="mx-6 mt-24 mb-12 md:mb-24 text-center text-white text-xl">
+        <Title>{title}</Title>
+        <WordleSolver client:load allPossibleWords={allPossibleWords} />
+      </div>
+    </main>
+  </body>
+</html>

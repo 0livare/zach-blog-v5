@@ -1,0 +1,42 @@
+---
+import BaseHead from '../../components/base-head.astro'
+
+import {Navigation, Prose, LittleCubes} from '~/page-components'
+import {BlogList, HoverCard, Title} from '~/components'
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead title="Apps" description="Little applets that I've created for some reason" />
+  </head>
+
+  <body>
+    <LittleCubes />
+    <Navigation />
+
+    <main class="max-w-6xl mx-auto">
+      <div class="mx-6 mt-24 mb-12 md:mb-24 text-center text-white text-xl">
+        <Title>Apps</Title>
+        <p>Little applets that I've created for some reason</p>
+      </div>
+
+      <BlogList>
+        <HoverCard
+          to="/apps/wordle"
+          src="/images/apps/wordle.jpg"
+          title="Wordle Solver"
+          alwaysShowOverlay
+          client:load
+        />
+        <HoverCard
+          to="/apps/jeopardy"
+          src="/images/apps/jeopardy.jpg"
+          title="Jeopardy Score Tracker"
+          alwaysShowOverlay
+          client:load
+        />
+      </BlogList>
+    </main>
+  </body>
+</html>

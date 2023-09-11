@@ -1,0 +1,35 @@
+---
+import path from 'path'
+import fs from 'fs/promises'
+
+import BaseHead from '../../components/base-head.astro'
+import {Navigation, LittleCubes, JeopardyGame} from '~/page-components'
+import {Title} from '~/components'
+
+const title = 'Jeopardy Score Tracker'
+const description = 'Type your categories in the top row and play along as you watch!'
+
+const filePath = path.join(process.cwd(), 'src', 'content', 'wordle', '_wordle-words-ranked.txt')
+const buffer = await fs.readFile(filePath)
+const allPossibleWords = buffer.toString().split('\n')
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead title={title} description={description} />
+  </head>
+
+  <body>
+    <LittleCubes />
+    <Navigation />
+
+    <main class="max-w-6xl mx-auto text-white">
+      <div class="mx-6 mt-24 mb-12 md:mb-24 text-center text-white text-xl">
+        <Title>{title}</Title>
+        <p class="my-12">{description}</p>
+      </div>
+      <JeopardyGame client:load />
+    </main>
+  </body>
+</html>
