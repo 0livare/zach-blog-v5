@@ -1,0 +1,48 @@
+---
+import {getCollection} from 'astro:content'
+
+import BaseHead from '../../components/base-head.astro'
+import {SITE_TITLE, SITE_DESCRIPTION} from '../../constants'
+
+import {Navigation, Prose, LittleCubes} from '~/page-components'
+import {BlogList, HoverCard, Title} from '~/components'
+
+const posts = (await getCollection('recipes'))
+  .filter((post) => process.env.NODE_ENV === 'development' || post.data.published !== false)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead title="Zach's Cookbook" description={SITE_DESCRIPTION} />
+  </head>
+
+  <body>
+    <LittleCubes />
+    <Navigation />
+
+    <main class="max-w-6xl mx-auto">
+      <div class="mx-6 mt-24 mb-12 md:mb-24">
+        <Title>Zach's Cookbook</Title>
+      </div>
+
+      <BlogList>
+        {
+          posts.map((post) => (
+            <li>
+              <HoverCard
+                key={post.slug}
+                to={`/cooking/${post.slug}`}
+                src={post.data.heroImage}
+                title={post.data.title}
+                subtitle={post.data.description}
+                client:load
+              />
+            </li>
+          ))
+        }
+      </BlogList>
+    </main>
+  </body>
+</html>
