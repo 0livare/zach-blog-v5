@@ -34,7 +34,7 @@ export function ScalingTable(props: ScalingTableProps) {
 
 type IngredientProps = {
   name: string
-  massInGrams: number | string
+  massInGrams?: number | string
   volume?: number | string
   volumeUnit?: string
   scalePercent?: number

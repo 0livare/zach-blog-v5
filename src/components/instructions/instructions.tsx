@@ -21,7 +21,7 @@ export function Instructions(props: InstructionsProps) {
 }
 
 export type StepProps = React.ComponentProps<'div'> & {
-  index: number
+  index?: number
   noWrapper?: boolean
 }
 

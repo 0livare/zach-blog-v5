@@ -7,18 +7,9 @@ heroImage: /images/cooking/recipes/oreo-shake.jpg
 ---
 
 import {ScalingTable, Ingredient, Instructions, Step} from '~/components'
+import {RecipeIngredients, RecipeInstructions} from './oreo-shake'
 
 No mysteries here, the key is balance. Spice it up a little with some chocolate sauce or smoe whipped cream on top.
 
-<ScalingTable>
-  <Ingredient name="Vanilla ice cream" massInGrams={300} scalePercent={100} />
-  <Ingredient name="Milk" massInGrams={125} volume={0.5} volumeUnit="cups" />
-  <Ingredient name="Oreos" massInGrams={44} volume={3} volumeUnit="cookies" />
-</ScalingTable>
-
-<Instructions>
-  <Step>
-    <b>Combine everything in your blender</b> and blend until smooth.
-  </Step>
-  <Step>Garnish with an extra Oreo on top</Step>
-</Instructions>
+<RecipeIngredients client:load />
+<RecipeInstructions />
