@@ -1,8 +1,7 @@
-import {HtmlHTMLAttributes} from 'react'
-
+import React from 'react'
 import {twMerge as cs} from 'tailwind-merge'
 
-export type TechnologiesProps = HtmlHTMLAttributes<HTMLDivElement> & {}
+export type TechnologiesProps = React.ComponentProps<'div'>
 
 export function Technologies(props: TechnologiesProps) {
   let {className, ...rest} = props

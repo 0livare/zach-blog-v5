@@ -1,4 +1,4 @@
-import {useEffect, useRef} from 'react'
+import React from 'react'
 import type {Updater} from 'use-immer'
 import {twMerge as cs} from 'tailwind-merge'
 
@@ -18,7 +18,7 @@ export function GameRow(props: GameRowProps) {
   const {className, words, setWords, wordIndex, ...rest} = props
   const word = words[wordIndex]
   const strWord = word.map((tile) => tile.letter).join('')
-  const inputRef = useRef<HTMLInputElement>(null)
+  const inputRef = React.useRef<HTMLInputElement>(null)
 
   function openKeyboard() {
     inputRef.current?.focus()
@@ -54,7 +54,7 @@ export function GameRow(props: GameRowProps) {
   )
 }
 
-type GameTileProps = HtmlProps & {
+type GameTileProps = React.ComponentProps<'button'> & {
   words: Word[]
   setWords: Updater<Word[]>
   wordIndex: number
@@ -64,7 +64,7 @@ type GameTileProps = HtmlProps & {
 
 function GameTile(props: GameTileProps) {
   const {className, children, words, setWords, wordIndex, tileIndex, openKeyboard, ...rest} = props
-  const rootRef = useRef<HTMLButtonElement>(null)
+  const rootRef = React.useRef<HTMLButtonElement>(null)
   const {state} = words[wordIndex][tileIndex]
 
   function pulseTile() {
@@ -73,7 +73,7 @@ function GameTile(props: GameTileProps) {
     })
   }
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (!children) return
     pulseTile()
   }, [children])

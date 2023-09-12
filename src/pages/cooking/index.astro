@@ -1,15 +1,14 @@
 ---
 import {getCollection} from 'astro:content'
 
+import {Navigation, LittleCubes, Title, BlogListWithSearch} from '~/components'
 import BaseHead from '../../components/base-head.astro'
-import {SITE_TITLE, SITE_DESCRIPTION} from '../../constants'
-
-import {Navigation, Prose, LittleCubes} from '~/page-components'
-import {BlogList, HoverCard, Title} from '~/components'
+import {SITE_DESCRIPTION} from '../../constants'
 
 const posts = (await getCollection('recipes'))
-  .filter((post) => process.env.NODE_ENV === 'development' || post.data.published !== false)
+  .filter(() => process.env.NODE_ENV === 'development')
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .map((post) => ({...post.data, slug: post.slug as string}))
 ---
 
 <!doctype html>
@@ -27,22 +26,7 @@ const posts = (await getCollection('recipes'))
         <Title>Zach's Cookbook</Title>
       </div>
 
-      <BlogList>
-        {
-          posts.map((post) => (
-            <li>
-              <HoverCard
-                key={post.slug}
-                to={`/cooking/${post.slug}`}
-                src={post.data.heroImage}
-                title={post.data.title}
-                subtitle={post.data.description}
-                client:load
-              />
-            </li>
-          ))
-        }
-      </BlogList>
+      <BlogListWithSearch postUrlPrefix="/cooking" posts={posts} />
     </main>
   </body>
 </html>

@@ -2,10 +2,9 @@
 import {getCollection} from 'astro:content'
 
 import BaseHead from '../../components/base-head.astro'
-import {SITE_TITLE, SITE_DESCRIPTION} from '../../constants'
+import {SITE_DESCRIPTION} from '../../constants'
 
-import {Navigation, Prose, LittleCubes} from '~/page-components'
-import {BlogList, HoverCard, Title} from '~/components'
+import {BlogList, HoverCard, Title, Navigation, LittleCubes} from '~/components'
 
 const posts = (await getCollection('blog'))
   .filter((post) => process.env.NODE_ENV === 'development' || post.data.published !== false)

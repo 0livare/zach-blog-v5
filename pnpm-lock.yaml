@@ -68,6 +68,9 @@ dependencies:
   tailwindcss:
     specifier: ^3.0.24
     version: 3.3.3
+  trie-search:
+    specifier: ^1.4.2
+    version: 1.4.2
   tslib:
     specifier: ^2.6.2
     version: 2.6.2
@@ -2190,6 +2193,12 @@ packages:
     dependencies:
       function-bind: 1.1.1
 
+  /hasharray@1.1.2:
+    resolution: {integrity: sha512-7w3idwaVXX9gL9LiTCBSNKRGTBcp2WI/kf13UYeZ9+trOGBHVYHei6qtMY6DVnwGOouVUSRg0+L2xf4Q2/CmzA==}
+    dependencies:
+      jclass: 1.2.1
+    dev: false
+
   /hast-util-from-parse5@7.1.2:
     resolution: {integrity: sha512-Nz7FfPBuljzsN3tCQ4kCBKqdNhQE2l0Tn+X1ubgKBPRoiDIu1mL08Cfw4k7q71+Duyaw7DXDN+VTAp4Vh3oCOw==}
     dependencies:
@@ -2568,6 +2577,11 @@ packages:
 
   /isexe@2.0.0:
     resolution: {integrity: sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==}
+    dev: false
+
+  /jclass@1.2.1:
+    resolution: {integrity: sha512-mRx8uv1qJLOtxbRf3IWOQIH2ro7VIPn6ZkhbTcUJvJEslLzYA7BSATXDi/GR1yKYV9DASsjTZL+0YJPdqSMznw==}
+    engines: {node: '>= 0.6'}
     dev: false
 
   /jiti@1.20.0:
@@ -4465,6 +4479,12 @@ packages:
     engines: {node: '>=8.0'}
     dependencies:
       is-number: 7.0.0
+    dev: false
+
+  /trie-search@1.4.2:
+    resolution: {integrity: sha512-dkZ5qQabfwtLzDj34sIBz/zqTI3q4jG5Aa2Eaq7kW3btjRoM7o3HP7gX0ANgMSiefLAx1qlyr0X3OMf9ZuCWAA==}
+    dependencies:
+      hasharray: 1.1.2
     dev: false
 
   /trim-lines@3.0.1:

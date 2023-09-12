@@ -13,4 +13,14 @@ const blog = defineCollection({
   }),
 })
 
-export const collections = {blog}
+const recipes = defineCollection({
+  schema: z.object({
+    title: z.string(),
+    description: z.string().optional(),
+    author: z.string().optional(),
+    date: z.coerce.date(),
+    heroImage: z.string().optional(),
+  }),
+})
+
+export const collections = {blog, recipes}

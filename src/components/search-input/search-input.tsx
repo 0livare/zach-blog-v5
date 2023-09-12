@@ -5,7 +5,7 @@ import {Icon} from '../icon'
 
 export type SearchInputProps = React.ComponentProps<'div'> & {
   searchText: string
-  setSearchText: React.Dispatch<React.SetStateAction<string>>
+  setSearchText: (searchText: string) => void
 }
 
 export function SearchInput(props: SearchInputProps) {
@@ -24,7 +24,7 @@ export function SearchInput(props: SearchInputProps) {
       {...rest}
       className={cs(
         'SearchInput',
-        'rounded-full border-2 border-blue-600 dark:border-teal w-36 transition-all duration-500',
+        'rounded-full text-tbase border-2 border-blue-600 dark:border-teal w-36 transition-all duration-500',
         isTyping && 'w-80',
         'flex items-center',
         className,

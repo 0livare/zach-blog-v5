@@ -1,4 +1,4 @@
-import {useState, useEffect, useRef, RefObject} from 'react'
+import React from 'react'
 
 let DEFAULT_CONFIG: UseDimensionConfig = {on: true, causeReRenders: true}
 
@@ -11,17 +11,17 @@ let DEFAULT_CONFIG: UseDimensionConfig = {on: true, causeReRenders: true}
  * new value when the size of the DOM element changes.
  */
 export function useDimension<E extends Element>(
-  domRef: RefObject<E>,
+  domRef: React.RefObject<E>,
   getDimension: (el: E) => number,
   config: UseDimensionConfig = {},
-): [number, RefObject<number>] {
+): [number, React.RefObject<number>] {
   let {on, causeReRenders} = {...DEFAULT_CONFIG, ...config}
 
-  let [length, setLength] = useState(0)
-  let lengthRef = useRef(length)
+  let [length, setLength] = React.useState(0)
+  let lengthRef = React.useRef(length)
 
   // Changed from useLayoutEffect for SSR
-  useEffect(() => {
+  React.useEffect(() => {
     let currentLength = getDimension(domRef.current!)
     lengthRef.current = currentLength
     setLength(currentLength)

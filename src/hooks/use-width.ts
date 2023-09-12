@@ -1,4 +1,4 @@
-import {useCallback, RefObject} from 'react'
+import React from 'react'
 
 import {useDimension} from './use-dimension'
 
@@ -9,8 +9,8 @@ import {useDimension} from './use-dimension'
  * @param {boolean} on  Whether or not to actively listen for width changes
  * @returns `width`: The current width of the dom element
  */
-export function useWidth(domRef: RefObject<HTMLElement>, {on = true} = {}) {
-  const getWidth = useCallback((el: HTMLElement) => (el ? el.offsetWidth : 0), [])
+export function useWidth(domRef: React.RefObject<HTMLElement>, {on = true} = {}) {
+  const getWidth = React.useCallback((el: HTMLElement) => (el ? el.offsetWidth : 0), [])
   const [width] = useDimension(domRef, getWidth, {
     on,
     causeReRenders: true,

@@ -1,9 +1,9 @@
-import {ButtonHTMLAttributes, CSSProperties} from 'react'
-
+import React from 'react'
 import {twMerge as cs} from 'tailwind-merge'
+
 import styles from './button.module.scss'
 
-export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+export type ButtonProps = React.ComponentProps<'button'> & {
   href?: string
   download?: boolean
 }
@@ -20,7 +20,7 @@ export function Button(props: ButtonProps) {
           '--ripple-color': 'var(--teal-soft)',
           borderColor: 'var(--teal-dark)',
           ...style,
-        } as CSSProperties
+        } as React.CSSProperties
       }
       className={cs(
         'Button',
