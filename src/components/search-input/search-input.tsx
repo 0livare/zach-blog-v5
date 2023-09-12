@@ -25,7 +25,7 @@ export function SearchInput(props: SearchInputProps) {
       className={cs(
         'SearchInput',
         'rounded-full text-tbase border-2 border-blue-600 dark:border-teal w-36 transition-all duration-500',
-        isTyping && 'w-80',
+        isTyping && 'w-96 max-w-full',
         'flex items-center',
         className,
       )}
@@ -40,7 +40,7 @@ export function SearchInput(props: SearchInputProps) {
       >
         <input
           type="text"
-          className={cs('bg-transparent h-full text-inherit p-2 flex-1 outline-none')}
+          className={cs('bg-transparent h-full text-inherit pl-6 pr-2 py-2 flex-1 outline-none')}
           ref={inputRef}
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
@@ -62,8 +62,9 @@ export function SearchInput(props: SearchInputProps) {
       </div>
       <button
         className={cs(
-          'w-full h-full p-2  hover:bg-blue-300 dark:hover:bg-teal-soft disabled:bg-transparent rounded-full text-inherit',
+          'w-full h-full p-2   disabled:bg-transparent rounded-full text-inherit',
           isTyping && 'w-32',
+          !isTyping && 'hover:bg-blue-300 dark:hover:bg-teal-soft',
         )}
         onClick={() => setIsTyping(true)}
         disabled={isTyping}

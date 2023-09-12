@@ -1,14 +1,14 @@
 ---
 import {getCollection} from 'astro:content'
 
+import {Title, Navigation, LittleCubes, BlogListWithSearch} from '~/components'
 import BaseHead from '../../components/base-head.astro'
 import {SITE_DESCRIPTION} from '../../constants'
-
-import {BlogList, HoverCard, Title, Navigation, LittleCubes} from '~/components'
 
 const posts = (await getCollection('blog'))
   .filter((post) => process.env.NODE_ENV === 'development' || post.data.published !== false)
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .map((post) => ({...post.data, slug: post.slug as string}))
 ---
 
 <!doctype html>
@@ -26,23 +26,7 @@ const posts = (await getCollection('blog'))
         <Title>Zach's Blog</Title>
       </div>
 
-      <BlogList>
-        {
-          posts.map((post) => (
-            <li>
-              <HoverCard
-                key={post.slug}
-                to={`/blog/${post.slug}`}
-                src={post.data.heroImage}
-                title={post.data.title}
-                subtitle={post.data.description}
-                alwaysShowOverlay
-                client:load
-              />
-            </li>
-          ))
-        }
-      </BlogList>
+      <BlogListWithSearch postUrlPrefix="/blog" posts={posts} alwaysShowCardOverlay client:load />
     </main>
   </body>
 </html>

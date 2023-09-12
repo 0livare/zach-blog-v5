@@ -11,20 +11,23 @@ type PostBasics = {
   description?: string
   date: Date
   heroImage?: string
+  tags?: string[]
 }
 
 type BlogListWithSearchProps = {
-  posts: PostBasics[]
+  posts: PostBasics[] | undefined
   postUrlPrefix: string
+  alwaysShowCardOverlay?: boolean
 }
 
 export function BlogListWithSearch(props: BlogListWithSearchProps) {
-  const {posts, postUrlPrefix} = props
+  const {posts, postUrlPrefix, alwaysShowCardOverlay} = props ?? {}
+  console.log('props', props)
   const [searchText, setSearchText] = React.useState('')
 
   const filteredPosts = useTrieSearch({
     searchText,
-    searchKeys: ['title', 'description'],
+    searchKeys: ['title', 'description', 'tags'],
     searchItems: posts,
   })
 
@@ -42,6 +45,7 @@ export function BlogListWithSearch(props: BlogListWithSearchProps) {
               src={post.heroImage}
               title={post.title ?? ''}
               subtitle={post.description}
+              alwaysShowOverlay={alwaysShowCardOverlay}
             />
           </li>
         ))}

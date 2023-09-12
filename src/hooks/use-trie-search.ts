@@ -6,7 +6,7 @@ import {useDebounce} from '~/hooks'
 export function useTrieSearch<T>(args: {
   searchText: string
   searchKeys: Array<keyof T>
-  searchItems: T[]
+  searchItems: T[] | undefined
 }): T[] {
   const {searchText, searchKeys, searchItems} = args
 
@@ -14,10 +14,11 @@ export function useTrieSearch<T>(args: {
   const trieRef = React.useRef<any>()
 
   React.useEffect(() => {
+    if (searchItems == null) return
     const trie = new TrieSearch(searchKeys as string[])
     trie.addAll(searchItems)
     trieRef.current = trie
-  }, [])
+  }, [searchItems == null])
 
   return debouncedSearchText ? trieRef.current.search(debouncedSearchText) : searchItems
 }
