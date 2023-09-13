@@ -12,7 +12,7 @@ export function JeopardyGame() {
   }
 
   return (
-    <div className="pb-64 relative">
+    <div className="pb-64 relative text-tbase lg:px-16">
       <ul className="px-4">
         <li>
           <b>One click:</b> Did not answer the question
@@ -51,5 +51,5 @@ export function JeopardyGame() {
 }
 
 function Heading(props: React.ComponentProps<'h1'>) {
-  return <h2 {...props} className="mt-16 mb-4 px-4 text-3xl" />
+  return <h2 {...props} className="mt-16 mb-4 px-4 text-4xl font-bold text-tprimary" />
 }
