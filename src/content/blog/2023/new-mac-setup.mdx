@@ -8,7 +8,7 @@ heroImage: /images/blog/mac-setup/mac-os-ventura-wallpaper.jpg
 published: true
 ---
 
-import {mdxComponents} from '~/components'
+import {mdxComponents, ShowMore} from '~/components'
 export const components = mdxComponents
 
 When you get a new computer there are just so many things you have to do to get it ready for everyday use as a web developer. This is the list of things that I've found over the years work well for me, you can of course pick and choose which parts are right for you!
@@ -246,21 +246,41 @@ With that out of the way, here is an incomplete list of wonderful Mac apps that 
      - It has so many features this app is worth 2-3x the $30 they're currently charging for it. This tool literally has a whole photo editor built into it that has become my go to for shitty meme editing. You don't know how much you need this until you try it. For real, take advantage of the 30-day money back trial and see what you're missing. It's under so much active development that after a year I paid the $19 to extend my updates for another year.
      - For the record, this post is in no way sponsored by Cleanshot, I just love this tool (but I'll gladly take a sponsorship! haha)
    - If you've already download Cleanshot on a different computer and want to move it to a new one, go to their [License Manager](https://licenses.cleanshot.com).
+   - I would recommend tweaking a couple of the default settings:
+
+   <ShowMore client:load>
+
+   - Cleanshot Settings → Shortcuts → General → All-in-One: **⌘⇧5**
+     - Clear out the rest of the General shortcuts
+   - Cleanshot Settings → Shortcuts → Screenshots → Capture Area: **⌘⇧4**
+     - Clear out the rest of the Screenshots shortcuts
+   - Cleanshot Settings → Screenshots → Freeze screen: **On**
+   - Cleanshot Settings → Screenshots → Crosshair mode: **Always enabled**
+   - Cleanshot Settings → Screenshots → Crosshair mode → Show magnifier: **On**
+   - Cleanshot Settings → Advanced → File name: `Screenshot ,%y,-,%m,-,%d, at ,%H,.,%M,.,%S`
+   - Cleanshot Settings → Advanced → File name → Add "@2x suffix": **Off**
+
+   </ShowMore>
 
 1. [MeetingBar](https://meetingbar.app)
 
    - This app solves a problem I had experienced for years. Finally a way to not be late to virtual meetings.
    - Ever since I started working remotely I had the constant issue of:
+
      - You can't control the meeting default reminder notifications (30m, 15m, 5m, etc.) on other people's meetings
        - You can change them on a per-meeting basis, but that gets annoying real fast. And if they update the meting for any reason, your changes go out the window.
      - The notification present most meetings is going to be either 10 or 15 minutes. Both of those are _more_ than enough time for me to continue working and completely forget about the meeting.
      - _In comes MeetingBar_. You can set MeetingBar to notify you of all meetings exactly **1 minute** before the meeting. Then just click the MeetingBar notification and _boom_, you're in the meeting, EARLY even!
-   - 💡 Pro Tip: You can even program MeetingBar to automatically pause Spotify when you join a meeting.
-     - **Meeting Bar Preferences > Advanced > Run AppleScript when joining a meeting**
-       ```bash
-       # write your script here
-       tell application "Spotify" to pause
-       ```
+
+       > 💡 **Pro Tip**: You can even program MeetingBar to automatically pause Spotify when you join a meeting.
+       >
+       > **Meeting Bar Preferences > Advanced > Run AppleScript when joining a meeting**
+       > `bash
+
+   # write your script here
+
+   tell application "Spotify" to pause
+   `
 
 1. [Flycut](https://apps.apple.com/us/app/flycut-clipboard-manager/id442160987?mt=12)
 
@@ -341,11 +361,11 @@ With that out of the way, here is an incomplete list of wonderful Mac apps that 
 
 > Several of these apps, along with other applications that you're likely to have on your computer require Accessibility permissions to work properly. And it's really annoying to forget to do this until later when you're trying to share you screen in a Zoom meeting only to find out that you have to "restart the app" to apply your new accessibility permissions!
 >
-> - **Privacy & Security → Microphone AND Camera**
+> - **System Settings → Privacy & Security → Microphone AND Camera**
 >   - Slack
 >   - Zoom
 >   - Discord
-> - **Privacy & Security → Accessibility**
+> - **System Settings → Privacy & Security → Accessibility**
 >   - 1Password
 >   - CleanShot X
 >   - Flycut
@@ -355,9 +375,10 @@ With that out of the way, here is an incomplete list of wonderful Mac apps that 
 >   - PixelSnap
 >   - Scroll Reverser
 >   - Zoom
-> - **Privacy & Security → Input Monitoring**
+> - **System Settings → Privacy & Security → Input Monitoring**
 >   - Logi Options
-> - **Privacy & Security → Screen Recording**
+> - **System Settings → Privacy & Security → Screen Recording**
+>   - 1Password _(for QR code capturing)_
 >   - CleanShot X
 >   - Discord
 >   - Loom

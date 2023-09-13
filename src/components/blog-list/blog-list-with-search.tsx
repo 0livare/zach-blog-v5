@@ -22,7 +22,6 @@ type BlogListWithSearchProps = {
 
 export function BlogListWithSearch(props: BlogListWithSearchProps) {
   const {posts, postUrlPrefix, alwaysShowCardOverlay} = props ?? {}
-  console.log('props', props)
   const [searchText, setSearchText] = React.useState('')
 
   const filteredPosts = useTrieSearch({
@@ -39,7 +38,7 @@ export function BlogListWithSearch(props: BlogListWithSearchProps) {
 
       <BlogList>
         {filteredPosts.map((post) => (
-          <li>
+          <li key={post.slug}>
             <HoverCard
               to={`${postUrlPrefix}/${post.slug}`}
               src={post.heroImage}
