@@ -1,0 +1,51 @@
+---
+title: I recreated my blog with Astro.js
+description: About the ups and downs of switching my Next.js blog over to Astro
+author: Zach Olivare
+date: 2023-09-11
+tags: mac
+heroImage: /images/blog/astro.webp
+published: false
+---
+
+The site you're reading this on is now built with [Astro](https://astro.build).
+
+## Why
+
+The primary reason I made this change was to improve my blog post writing experience.
+
+My previous Next.js implementation of this blog has a "custom" MDX parsing implementation. While that was super flexible and allowed me to do some interesting things in the MDX -> React conversion process, the process of actually authoring a new blog post was terrible.
+
+It sucked primarily because it lacked any kind of hot-reloading. So every time I wanted to see a change reflected in the browser, I had to refresh the page and scroll back down to my area of interest. ohmahgosh it was so frickin' annoying.
+
+Astro totes itself as a "content focused" framework, and I have heard good things about it's ability to parse MDX, so I thought it might be able to help me improve my authoring issues.
+
+## A brief history of this blog
+
+{/* prettier-ignore */}
+{/*
+
+- These two divs allow this table to break out of the .prose max-width, while remaining
+- centered on any size screen.
+- The 65ch width of .prose is hardcoded though
+  \*/}
+
+<div style={{width: '100vw', marginLeft: ' calc(-100vw / 2 + 65ch / 2 - 10px)'}} className="px-16">
+<div style={{maxWidth: '1500px', marginLeft: 'auto', marginRight: 'auto'}}>
+
+| Version | Started  | Framework                    | Language(s)              | CSS               | Content  | Package Manager | Other                             |
+| ------- | -------- | ---------------------------- | ------------------------ | ----------------- | -------- | --------------- | --------------------------------- |
+| [1][v1] | Oct 2015 | AngularJS, angular-ui-router | JavaScript, Coffeescript | SCSS              | markdown | bower           |
+| [2][v2] | Dec 2016 | React 15                     | JavaScript               | CSS modules       | markdown | npm             | webpack, react-static-boilerplate |
+| [3][v3] | Jan 2019 | Next.js 9, React 16          | JavaScript               | styled-components | markdown | yarn            | prettier                          |
+| [4][v4] | Dec 2021 | Next.js 12, React 17         | TypeScript               | Tailwind CSS      | MDX      | yarn            | storybook                         |
+| [5][v5] | Sep 2023 | Astro 3, React 18            | TypeScript               | Tailwind CSS      | MDX      | pnpm            |
+
+</div>
+</div>
+
+[v1]: https://github.com/0livare/zach-blog-v1
+[v2]: https://github.com/0livare/zach-blog-v2
+[v3]: https://github.com/0livare/zach-blog-v3
+[v4]: https://github.com/0livare/zach-blog-v4
+[v5]: https://github.com/0livare/zach-blog-v5
