@@ -171,7 +171,7 @@ function Project(props: ProjectProps) {
           className={cs('rounded-full', imgClassName)}
         />
       </div>
-      <h3 className="uppercase text-center">{title}</h3>
+      <h3 className="uppercase text-center text-2xl font-bold">{title}</h3>
       <div>{children}</div>
     </div>
   )
