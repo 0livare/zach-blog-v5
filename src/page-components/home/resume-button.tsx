@@ -5,7 +5,7 @@ export function ResumeButton() {
     <div className="flex justify-center">
       <Button
         className="text-white mt-12 min-w-[200px]"
-        href="/zach-posten-resume-2021.pdf"
+        href="/zach-olivare-resume-2023.pdf"
         download
       >
         View resumé
