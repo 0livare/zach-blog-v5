@@ -3,10 +3,10 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "dev": "bun --bun astro dev",
-    "start": "bun --bun astro dev",
-    "build": "bun --bun astro build",
-    "preview": "bun --bun astro preview"
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
   },
   "dependencies": {
     "@astrojs/mdx": "^1.0.3",
