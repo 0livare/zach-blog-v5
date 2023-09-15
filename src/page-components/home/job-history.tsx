@@ -154,7 +154,7 @@ export function JobHistory(props: JobHistoryProps) {
             alt="github"
             imgClassName="invert"
           >
-            <h3 className="font-bold mt-4 text-md">Creator of:</h3>
+            <h3 className="font-bold mt-4 text-base">Creator of:</h3>
             <ul className="list-disc flex flex-col gap-2 ml-8">
               <li>
                 <ProjectLink to="https://www.npmjs.com/package/unorepo" label="Unorepo" /> - A CLI
@@ -175,7 +175,7 @@ export function JobHistory(props: JobHistoryProps) {
               </li>
             </ul>
 
-            <h3 className="font-bold mt-4 text-md">Contributor to:</h3>
+            <h3 className="font-bold mt-4 text-base">Contributor to:</h3>
             <ul className="list-disc flex flex-col gap-2 ml-8">
               <li>
                 <ProjectLink to="https://github.com/jquense/yup" label="Yup" /> - Schema validation

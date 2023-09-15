@@ -25,7 +25,7 @@ const posts = (await getCollection('recipes'))
         <Title>Zach's Cookbook</Title>
       </div>
 
-      <BlogListWithSearch postUrlPrefix="/cooking" posts={posts} client:load />
+      <BlogListWithSearch postUrlPrefix="/cooking" posts={posts} client:load cardType="recipe" />
     </main>
   </body>
 </html>

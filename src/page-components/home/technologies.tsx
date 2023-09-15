@@ -37,7 +37,7 @@ function BuildBlock(props: {label: string; children: string; className?: string}
     <div
       className={cs(
         'BuildBlock',
-        'md:m-4 p-4 min-h-[60px] w-11/12 md:w-9/12 lg:w-auto lg:min-w-[700px] lg:max-w-[700px]  flex items-center bg-navy text-white md:text-xl gap-4',
+        'md:m-4 p-4 min-h-[116px] w-11/12 md:w-9/12 lg:w-auto lg:min-w-[700px] lg:max-w-[700px]  flex items-center bg-navy text-white md:text-xl gap-4',
         className,
       )}
     >

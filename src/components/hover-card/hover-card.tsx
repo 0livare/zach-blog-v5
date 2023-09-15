@@ -22,12 +22,12 @@ export function HoverCard(props: HoverCardProps) {
         className,
       )}
       to={to}
-      style={{backgroundImage: `url(${src})`}}
     >
+      <img src={src} className="w-full h-full object-cover" width={320} height={208} />
       <div
         className={cs(
           'absolute top-0 left-0 w-full h-full text-white bg-gray-700/90 no-underline p-4',
-          'opacity-0 group-hover:opacity-100 group-focus:opacity-100',
+          'opacity-0 group-hover:opacity-100 group-active:opacity-100 group-focus:opacity-100',
           alwaysShowOverlay && 'opacity-100',
           'flex justify-center items-center flex-col text-center transition-opacity duration-100',
           to && 'cursor-pointer',

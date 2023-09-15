@@ -1,16 +1,13 @@
-let isInDevMode = process.env.NODE_ENV === 'development';
+let isInDevMode = process.env.NODE_ENV === 'development'
 
-let content = ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'];
+let content = ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}']
 if (isInDevMode) {
-  content.push('./.storybook/components/*.tsx');
+  content.push('./.storybook/components/*.tsx')
 }
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  plugins: [
-    require('@tailwindcss/typography'),
-    require('tailwind-scrollbar-hide'),
-  ],
+  plugins: [require('@tailwindcss/typography'), require('tailwind-scrollbar-hide')],
   content,
   important: true,
   theme: {
@@ -65,4 +62,4 @@ module.exports = {
       ],
     },
   },
-};
+}
