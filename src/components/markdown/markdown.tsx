@@ -7,9 +7,11 @@ export const mdxComponents: MDXComponents = {
 }
 
 function Pre(props: any) {
+  // Avoid a warning about tabindex vs tabIndex
+  const {tabindex, ...rest} = props
   return (
     <div className={styles.scrollbar}>
-      <pre {...props} className={`${props.className} ${styles.pre}`} />
+      <pre {...rest} className={`${props.className} ${styles.pre}`} tabIndex={tabindex} />
     </div>
   )
 }
