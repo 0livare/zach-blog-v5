@@ -1,0 +1,38 @@
+---
+import {NeonText} from '~/components'
+import {twMerge as cs} from 'tailwind-merge'
+import {Image} from 'astro:assets'
+
+import cubeImg from './images/cube.png'
+import {SocialLink} from './social-link'
+import styles from './jumbotron.module.scss'
+
+const {className} = Astro.props
+---
+
+<div class={cs('Jumbotron', styles.wrapperShadow, className)}>
+  <div
+    class={cs(
+      styles.wrapper,
+      'h-[800px] max-h-[80vh] flex justify-center items-center relative shadow-xl',
+    )}
+  >
+    <div
+      class="max-w-[600px] w-[90vw] md:w-[66vw] relative transition duration-500 hover:drop-shadow-white"
+    >
+      <Image src={cubeImg} width={946} height={882} alt="rubik's cube" loading="eager" />
+    </div>
+    <div class="absolute flex flex-col justify-center items-center pointer-events-none">
+      <NeonText className="font-serif text-white uppercase text-7xl pointer-events-auto">
+        Zach Olivare
+      </NeonText>
+      <hr class="h-0.5 w-24 bg-white mt-6 mb-4" />
+      <h2 class="text-white uppercase text-lg">Software Engineer</h2>
+      <div class="flex justify-center items-center mt-10 gap-4 pointer-events-auto">
+        <SocialLink to="http://www.github.com/0livare" icon="Github" />
+        <SocialLink to="http://www.twitter.com/0livare" icon="Twitter" />
+        <SocialLink to="http://www.linkedin.com/in/olivare" icon="Linkedin" />
+      </div>
+    </div>
+  </div>
+</div>

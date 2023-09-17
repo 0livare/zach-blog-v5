@@ -1,0 +1,191 @@
+---
+import {twMerge as cs} from 'tailwind-merge'
+
+import {OverflowCarousel} from '~/components'
+import {ResumeButton} from './resume-button'
+import Project from './project.astro'
+import {ProjectLink} from './project-link'
+
+import bcImg from './images/bright-cellars-badge-logo.png'
+import glasImg from './images/glas.jpg'
+import jciImg from './images/jci-open-blue.png'
+import rhImg from './images/robert-half.png'
+import powerbiImg from './images/powerbi-tips.png'
+import skyslopeImg from './images/skyslope-logo.png'
+import githubImg from './images/github.svg'
+
+const {className} = Astro.props
+---
+
+<div class={cs('JobHistory', 'text-white py-12', className)} style={{background: 'var(--navy)'}}>
+  <OverflowCarousel className="md:max-w-[90vw] mx-auto" initialIndex={-1} client:load>
+    <OverflowCarousel.Slide>
+      <Project src={glasImg} title="GLAS by Johnson Controls" alt="GLAS thermostat">
+        <ul class="list-disc flex flex-col gap-2">
+          <li>
+            Architected and built an embedded Windows IoT Core UWP application for Johnson Controls'
+            first ever smart residential thermostat, GLAS
+          </li>
+          <li>
+            As the security champion for GLAS, I worked with security consultants and 3rd party pen
+            testers to meet corporate security requirements
+          </li>
+          <li>
+            Contributed to CCT, the Controller Configuration Tool, an application used by installers
+            all over the world to flash and set up new and existing HVAC controllers
+          </li>
+          <li>
+            Contributed to what would become the largest scale automated testing framework ever
+            created at the company, encompassing an entire suite of applications
+          </li>
+        </ul>
+      </Project>
+    </OverflowCarousel.Slide>
+
+    <OverflowCarousel.Slide>
+      <Project src={rhImg} title="Robert Half Technologies" alt="">
+        <ul class="list-disc flex flex-col gap-2">
+          <li>
+            Architected and built a content-focused Gatsby React application (digital magazines)
+          </li>
+          <li>Created a library of reusable React components</li>
+          <li>
+            Developed the front end of a nurse management system that allowed coordinators to search
+            for and manipulate nurse records through a variety of user friendly mechanisms,
+            including a custom Google Maps integration
+          </li>
+        </ul>
+      </Project>
+    </OverflowCarousel.Slide>
+
+    <OverflowCarousel.Slide>
+      <Project src={jciImg} title="JCI Corporate Design System" alt="JCI Open Blue illustration">
+        <ul class="list-disc flex flex-col gap-2">
+          <li>
+            Architected and co-built a company-wide design system in vanilla JS, React, and Angular
+          </li>
+          <li class="ml-4">
+            Most of the code was written in vanilla JS to maximize code-reuse, and relatively
+            lightweight wrappers were created for React and Angular to maximize adoption
+          </li>
+          <li>Created and maintained complex monorepo build systems</li>
+          <li>
+            Met with engineering leaders throughout the company to convey the importance and
+            benefits of the design system
+          </li>
+        </ul>
+      </Project>
+    </OverflowCarousel.Slide>
+
+    <OverflowCarousel.Slide>
+      <Project src={bcImg} alt="Bright Cellars logo" title="Bright Cellars">
+        <ul class="list-disc flex flex-col gap-2">
+          <li>
+            I lead the development of the Bright Cellars design system, a library of easy to use,
+            flexible, themeable React components capable of being used across products
+          </li>
+          <li>
+            Got team and leadership buy in on a re-write of the customer facing site from heavily
+            customized WordPress to Next.js
+          </li>
+          <li>Collected information on user behavior with Google Analytics & Mixpanel</li>
+          <li>Executed A/B tests to enable data-driven design</li>
+          <li>Worked closely with the UX team to collaborate on difficult problems</li>
+          <li>Wrote meaningful, robust automated tests</li>
+        </ul>
+      </Project>
+    </OverflowCarousel.Slide>
+
+    <OverflowCarousel.Slide>
+      <Project src={powerbiImg} alt="PowerBI.Tips logo" title="PowerBI.Tips">
+        <ul class="list-disc flex flex-col gap-2">
+          <li>
+            Created an Azure Static Web App for sharing PowerBI reports and an Azure Functions
+            backend with a Gremlin Cosmos Graph DB
+          </li>
+          <li>
+            Created{' '}
+            <ProjectLink to="https://powerbi.tips/product/business-ops" label="Business Ops" />, an
+            Electron Windows application and installer to manage extensions for PowerBI desktop
+          </li>
+        </ul>
+      </Project>
+    </OverflowCarousel.Slide>
+
+    <OverflowCarousel.Slide>
+      <Project src={skyslopeImg} alt="Skyslope logo" title="SkySlope">
+        <ul class="list-disc flex flex-col gap-2">
+          <li>
+            Architected and lead the development of a $4M revenue product using Next.js, React,
+            TypeScript, React Query, Tailwind CSS, Node, Koa, MongoDB Atlas
+          </li>
+          <li>
+            Implemented the UX design system as a shared JS library. Also created its docs website
+            (Storybook) and gave company-wide presentations to increase adoption
+          </li>
+          <li>
+            Created and thoroughly documented a shared utility library that removed thousands of
+            lines of duplicated code across 10+ projects
+          </li>
+          <li>
+            Authored a custom framework to allow for the creation of reusable email templates in
+            React and MJML
+          </li>
+          <li>Mentored junior & mid-level developers</li>
+        </ul>
+      </Project>
+    </OverflowCarousel.Slide>
+
+    <OverflowCarousel.Slide>
+      <Project src={githubImg} title="Open source contributions" alt="github" imgClassName="invert">
+        <h3 class="font-bold mt-4 text-base">Creator of:</h3>
+        <ul class="list-disc flex flex-col gap-2 ml-8">
+          <li>
+            <ProjectLink to="https://www.npmjs.com/package/unorepo" label="Unorepo" /> - A CLI for
+            monorepo management
+          </li>
+          <li>
+            <ProjectLink to="https://www.npmjs.com/package/jest-tsd" label="Jest-tsd" /> - An
+            extension to the Jest testing framework to allow direct testing of TypeScript type
+            definitions
+          </li>
+          <li>
+            <ProjectLink
+              to="https://www.npmjs.com/package/gremlin-cosmos"
+              label="gremlin-cosmos"
+            />{' '}
+             - A wrapper for the JavaScript implementation of gremlin to make interacting with the
+            Gremlin API of a Cosmos DB less painful.
+          </li>
+        </ul>
+
+        <h3 class="font-bold mt-4 text-base">Contributor to:</h3>
+        <ul class="list-disc flex flex-col gap-2 ml-8">
+          <li>
+            <ProjectLink to="https://github.com/jquense/yup" label="Yup" /> - Schema validation
+            library
+          </li>
+          <li>
+            <ProjectLink to="https://github.com/vercel/next.js" label="Vercel's Next.js" /> - React
+            Framework
+          </li>
+          <li>
+            <ProjectLink
+              to="https://github.com/material-components/material-components-web"
+              label="Google's Material Design components"
+            />
+          </li>
+          <li>
+            <ProjectLink
+              to="https://github.com/Azure/azure-iot-sdk-csharp"
+              label="Microsoft's C# Azure IoT SDK"
+            />
+          </li>
+          <li>Chromecast sender app (Google)</li>
+        </ul>
+      </Project>
+    </OverflowCarousel.Slide>
+  </OverflowCarousel>
+
+  <ResumeButton />
+</div>

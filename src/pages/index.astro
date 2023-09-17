@@ -5,11 +5,11 @@ import SocialMediaPreview from '../components/social-media-preview.astro'
 import {SITE_DESCRIPTION} from '../constants'
 import {
   DesignCredit,
-  Jumbotron,
   MiniBio,
   OtherInterests,
   JobHistory,
   Technologies,
+  Jumbotron,
 } from '~/page-components'
 ---
 
@@ -33,7 +33,7 @@ import {
 
     <main class="relative text-slate-600 dark:text-slate-600">
       <MiniBio />
-      <JobHistory client:idle />
+      <JobHistory />
       <Technologies />
       <OtherInterests client:visible />
       <DesignCredit />

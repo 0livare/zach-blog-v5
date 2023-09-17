@@ -1,0 +1,27 @@
+---
+import {twMerge as cs} from 'tailwind-merge'
+import {Image} from 'astro:assets'
+
+const {src, title, className, imgClassName, alt, ...rest} = Astro.props
+---
+
+<div
+  class={cs(
+    'Project',
+    'flex flex-col gap-4 md:gap-8',
+    'max-w-sm',
+    'bg-black/20 p-8 rounded-lg h-full',
+    className,
+  )}
+  {...rest}
+>
+  <div class={cs('text-center aspect-square w-24 md:w-48 self-center')}>
+    <Image width={200} height={200} alt={alt} src={src} class={cs('rounded-full', imgClassName)} />
+  </div>
+  <h3 class="uppercase text-2xl text-center font-bold h-16 flex items-center justify-center">
+    {title}
+  </h3>
+  <div>
+    <slot />
+  </div>
+</div>
