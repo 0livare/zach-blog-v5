@@ -3,6 +3,7 @@ import type {CollectionEntry} from 'astro:content'
 
 import {Navigation, LittleCubes} from '~/components'
 import {Prose} from '~/page-components'
+import SocialMediaPreview from '~/components/social-media-preview.astro'
 import BaseHead from '../components/base-head.astro'
 import {ArticleLayout} from './article-layout'
 
@@ -13,7 +14,7 @@ const {title, description, heroImage, date, author} = Astro.props
 
 <html lang="en">
   <head>
-    <BaseHead title={title} description={description} />
+    <BaseHead type="profile" title={title} description={description} src={heroImage} />
   </head>
 
   <body>

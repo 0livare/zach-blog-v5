@@ -1,7 +1,6 @@
 ---
 import {Navigation} from '~/components'
 import BaseHead from '../components/base-head.astro'
-import SocialMediaPreview from '../components/social-media-preview.astro'
 import {SITE_DESCRIPTION} from '../constants'
 import {
   DesignCredit,
@@ -16,7 +15,14 @@ import {
 <!doctype html>
 <html lang="en">
   <head>
-    <BaseHead title="Zach Olivare" description={SITE_DESCRIPTION} />
+    <BaseHead
+      title="Zach Olivare"
+      description={SITE_DESCRIPTION}
+      type="profile"
+      title="Zach's Blog"
+      description="UI architect with fullstack experience, UX Advocate"
+      src="/images/zach-square.jpg"
+    />
   </head>
   <body>
     <Navigation forceWhiteGlow />
@@ -24,12 +30,6 @@ import {
     <header>
       <Jumbotron className="relative z-10" />
     </header>
-
-    <SocialMediaPreview
-      type="profile"
-      title="Zach's Blog"
-      description="Frontend architect with backend experience"
-    />
 
     <main class="relative text-slate-600 dark:text-slate-600">
       <MiniBio />

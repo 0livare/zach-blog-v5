@@ -7,20 +7,24 @@ interface Props {
 }
 
 const {type, title, description, src} = Astro.props
-const {pathname} = Astro.url
+
+const defaultImage = '/images/little-cube.png'
+const image = new URL(src || defaultImage, Astro.url)
 ---
 
+<!-- Open Graph / Facebook -->
 <meta property="og:locale" content="en_US" />
 <meta property="og:type" content={type} />
 <meta property="og:title" content={title} />
 {description && <meta property="og:description" content={description} />}
-<meta property="og:url" content={pathname} />
+<meta property="og:url" content={Astro.url} />
 <meta property="og:site_name" content="Zach's Blog" />
-<meta
-  property="og:image"
-  content={src ? 'https://www.olivare.net' + src : 'https://www.olivare.net/images/home/zach.jpg'}
-/>
-<meta
-  property="og:image:secure_url"
-  content={src || 'https://www.olivare.net/images/home/zach.jpg'}
-/>
+<meta property="og:image" content={image} />
+<meta property="og:image:secure_url" content={image} />
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:url" content={Astro.url} />
+<meta property="twitter:title" content={title} />
+<meta property="twitter:description" content={description} />
+<meta property="twitter:image" content={image} />
