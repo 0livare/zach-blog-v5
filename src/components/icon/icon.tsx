@@ -3,7 +3,7 @@ import {twMerge as cs} from 'tailwind-merge'
 // @ts-ignore
 import * as icons from 'feather-icons-react'
 
-export type IconProps = Omit<React.HtmlHTMLAttributes<SVGElement>, 'color'> & {
+export type IconProps = Omit<React.ComponentProps<'svg'>, 'color'> & {
   name: IconName
   size?: string | number
   fill?: string
