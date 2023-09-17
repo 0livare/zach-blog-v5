@@ -5,8 +5,13 @@ author: Zach Olivare
 date: 2023-09-11
 tags: mac
 heroImage: /images/blog/astro.webp
-published: false
+published: true
 ---
+
+import {Image} from 'astro:assets'
+import {BlogFullWidth, Aside, ShowMore, mdxComponents} from '~/components'
+export const components = mdxComponents
+import lighthouseImg from '~/assets/blog/old-zach-blogs/next-vs-astro-lighthouse.png'
 
 The site you're reading this on is now built with [Astro](https://astro.build).
 
@@ -14,7 +19,7 @@ The site you're reading this on is now built with [Astro](https://astro.build).
 
 The primary reason I made this change was to improve my blog post writing experience.
 
-My previous Next.js implementation of this blog has a "custom" MDX parsing implementation. While that was super flexible and allowed me to do some interesting things in the MDX -> React conversion process, the process of actually authoring a new blog post was terrible.
+My previous Next.js implementation of this blog had a "custom" MDX parsing implementation. While that was super flexible and allowed me to do some interesting things in the MDX -> React conversion process, the process of actually authoring a new blog post wasn't great.
 
 It sucked primarily because it lacked any kind of hot-reloading. So every time I wanted to see a change reflected in the browser, I had to refresh the page and scroll back down to my area of interest. ohmahgosh it was so frickin' annoying.
 
@@ -22,30 +27,168 @@ Astro totes itself as a "content focused" framework, and I have heard good thing
 
 ## A brief history of this blog
 
-{/* prettier-ignore */}
-{/*
+My first ever attempt at a blog was in 2015, using the original AngularJS. A lot has changed since then, but I was still able to get every version of this blog up and running locally again to take these screenshots!
 
-- These two divs allow this table to break out of the .prose max-width, while remaining
-- centered on any size screen.
-- The 65ch width of .prose is hardcoded though
-  \*/}
+<BlogFullWidth>
 
-<div style={{width: '100vw', marginLeft: ' calc(-100vw / 2 + 65ch / 2 - 10px)'}} className="px-16">
-<div style={{maxWidth: '1500px', marginLeft: 'auto', marginRight: 'auto'}}>
+| Version | Started  | Framework                    | Language(s)              | CSS               | Content  | Package Manager | Other Notable Tech                | Screenshots                                           |
+| ------- | -------- | ---------------------------- | ------------------------ | ----------------- | -------- | --------------- | --------------------------------- | ----------------------------------------------------- |
+| [1][v1] | Oct 2015 | AngularJS, angular-ui-router | JavaScript, Coffeescript | SCSS              | markdown | bower           | compass                           | [Home][v1-home], [Blog][v1-blog]                      |
+| [2][v2] | Dec 2016 | React 15                     | JavaScript               | CSS modules       | markdown | npm             | webpack, react-static-boilerplate | [Home][v2-home], [Blog][v2-blog]                      |
+| [3][v3] | Jan 2019 | Next.js 9, React 16          | JavaScript               | styled-components | markdown | yarn            | prettier                          | [Home][v3-home], [Blog][v3-blog]                      |
+| [4][v4] | Dec 2021 | Next.js 12, React 17         | TypeScript               | Tailwind CSS      | MDX      | yarn            | storybook                         | [Home][v4-home], [Blog][v4-blog]                      |
+| [5][v5] | Sep 2023 | Astro 3, React 18            | TypeScript               | Tailwind CSS      | MDX      | bun             |                                   | [Home](/), [Blog](/blog/2015/ios-ui-creation-methods) |
 
-| Version | Started  | Framework                    | Language(s)              | CSS               | Content  | Package Manager | Other                             |
-| ------- | -------- | ---------------------------- | ------------------------ | ----------------- | -------- | --------------- | --------------------------------- |
-| [1][v1] | Oct 2015 | AngularJS, angular-ui-router | JavaScript, Coffeescript | SCSS              | markdown | bower           |
-| [2][v2] | Dec 2016 | React 15                     | JavaScript               | CSS modules       | markdown | npm             | webpack, react-static-boilerplate |
-| [3][v3] | Jan 2019 | Next.js 9, React 16          | JavaScript               | styled-components | markdown | yarn            | prettier                          |
-| [4][v4] | Dec 2021 | Next.js 12, React 17         | TypeScript               | Tailwind CSS      | MDX      | yarn            | storybook                         |
-| [5][v5] | Sep 2023 | Astro 3, React 18            | TypeScript               | Tailwind CSS      | MDX      | pnpm            |
-
-</div>
-</div>
+</BlogFullWidth>
 
 [v1]: https://github.com/0livare/zach-blog-v1
 [v2]: https://github.com/0livare/zach-blog-v2
 [v3]: https://github.com/0livare/zach-blog-v3
 [v4]: https://github.com/0livare/zach-blog-v4
 [v5]: https://github.com/0livare/zach-blog-v5
+[v1-home]: /images/blog/old-zach-blogs/v1-home.png
+[v1-blog]: /images/blog/old-zach-blogs/v1-blog.png
+[v2-home]: /images/blog/old-zach-blogs/v2-home.png
+[v2-blog]: /images/blog/old-zach-blogs/v2-blog.png
+[v3-home]: /images/blog/old-zach-blogs/v3-home.png
+[v3-blog]: /images/blog/old-zach-blogs/v3-blog.png
+[v4-home]: /images/blog/old-zach-blogs/v4-home.png
+[v4-blog]: /images/blog/old-zach-blogs/v4-blog.png
+
+## The best parts of Astro
+
+### Hot reloading in MDX Files
+
+This is the reason that I turned to Astro in the first place, and as expected my blog post writing experience has improved dramatically.
+
+### Imports in MDX Files
+
+In my previous "custom" implementation of MDX parsing, I had to pass every React component that could possibly be used in an MDX file into the MDX parser. But Astro can parse JS imports in MDX files, which is a much more elegant solution.
+
+### Content APIs
+
+Astro's [Content Collections](https://docs.astro.build/en/guides/content-collections) APIs are brilliant. They do a great job of abstracting away the processing of MDX files. In order to get a list of my blog posts, this is all the code that is necessary:
+
+```ts
+await getCollection('blog')
+```
+
+<Aside variant="gray">
+  Compare that to what I had to do in my Next.js implementation:
+
+  <ShowMore client:load>
+
+```ts
+export const postFilePaths = glob.sync(
+  path.join(process.cwd(), 'src', 'content', 'posts', '**', '*.mdx'),
+)
+export const allPostsData = readMDXFiles(postFilePaths)
+
+function readMDXFiles(filePaths: string[]) {
+  return filePaths
+    .map((postFilePath) => {
+      const postContents = fs.readFileSync(postFilePath).toString()
+      const postSlug = postFilePath.match(/.*\/(.+)\.mdx/)![1]
+      return [postSlug, postContents]
+    })
+    .map(([slug, source]) => {
+      const postData = matter(source) as unknown as PostData
+      postData.data.slug = slug
+      return postData
+    })
+    .map((postData) => {
+      try {
+        postFrontmatterSchema.validateSync(postData.data)
+      } catch (e) {
+        console.error(`Error on post: `, postData.data)
+        throw e
+      }
+      return postData
+    })
+    .map((postData) => {
+      let date = postData.data.date
+
+      // Because I'm only including the date in the blog posts, it's assuming
+      // 00:00 UTC time, and then the day is wrong when converting to the local
+      // time zone.
+      let dateLocalTimezone = date.valueOf() + date.getTimezoneOffset() * 60 * 1000
+      let dateStr = format(dateLocalTimezone, 'yyyy LLL dd')
+
+      const r: PostOutput = {
+        ...postData,
+        frontMatter: {
+          ...postData.data,
+          date: dateStr,
+        } as PostFrontMatter,
+      }
+
+      // Get rid of the data property that grey-matter creates,
+      // because I have renamed it to frontMatter
+      // @ts-ignore
+      delete r.data
+
+      return r
+    })
+}
+```
+
+  </ShowMore>
+</Aside>
+
+## The mixed parts of Astro
+
+### Performance
+
+Comparing lighthouse scores between my Next.js app and this Astro app (on the home page) gives mixed results:
+
+<Image
+  src={lighthouseImg}
+  alt="nextjs vs astro: performance 98/90, accessibility 94/95, best practices 75/92, SEO 92/100, LCP 2.4s/3.5s"
+/>
+
+As you can see, best practices gets a nice boost and SEO goes all the way up to 100! But what is most interesting to me is the 8 point drop in performance -- 1.1s in LCP is a non-trivial difference!
+
+Both apps are statically rendered into HTML at build time, and both apps were deployed on Vercel during this test. One would think that Astro's ["Dynamic Islands"](https://docs.astro.build/en/concepts/islands) might give it the edge here, but it seems to have been a non-factor.
+
+When I first ran these tests there was actually a 13 point performance differential, but taking advantage of the Astro [&lt;Image>](https://docs.astro.build/en/guides/images) component to serve my images as `.webp` files brought Astro's performance up to 90. 
+
+The remaining difference according to Lighthouse is a lack of Astro automatically inlining Google fonts. I might look into that more later try and do so manually.
+
+## The unfortunate parts of Astro
+
+### .astro files
+
+`.astro` files are necessary to Astro as a framework because they're what enables the core concept of "dynamic islands". Having their own file type is also what allows Astro to simultaneously support multiple frameworks (React, Svelte, Vue, etc.).
+
+Unfortunately I've found dynamic islands to be annoying in practice. It's so easy to forget the `client:load` attribute on an island, and then you're left staring at the page wondering why your code isn't working.
+
+In addition:
+
+- These custom files also require a custom [VS Code extension](https://marketplace.visualstudio.com/items?itemName=astro-build.astro-vscode) which has crashed and/or failed to start for me on a regular basis. Whereas support for the plain React files used by Next.js is built into VS Code and works  flawlessly.
+- Astro files only have a default export so they can't be exported from barrel files without doing `export {default as Component} from './foo.astro'`.
+- Astro built-in components are limited to .astro files, which means they're limited to top-level components if the rest of your components are React components. Or you're forced to go through the awkward process of converting some of your lower-level React components into `.astro` files.
+- You can't create a little helper sub-component in the same file.
+- Because .astro files **can't** have client code in them directly, this means that you're **forced** to use them in combination with a framework to achieve client side functionality. The co-existence of part Astro and part (in my case) React is kind of messy. Especially when more and more "lower level" components are converted to .astro files in order to use something like `<Image>`.
+  - Have an Astro component that you need to add client functionality to? Well now you have to do the opposite conversion 😖
+
+### Issues with nested components in MDX
+
+For reasons that I don't understand, nesting multiple React components inside of an MDX file causes weird rendering issues with those nested components, _especially_ if you try to use `client:load` on any of those React components. In order to make it work you have to break it out into a separate file and then import that file into the MDX file (as a single, un-nested component).
+
+### Hot reloading in JSX Files
+
+Ironically, given the reason I switched to Astro was to improve hot reloading in MDX files, Astro's hot reloading in JSX files is sometimes broken. My home page component for example has at certain times during the development process refused to hot-reload, and other times it has worked just fine.
+
+I don't know what about the component causes it to break. I've seen it happen with the smallest possible React component (literally just returning a string). I've had a component hot-reloading just fine, copy-pasted its contents into a different file and now that file wouldn't hot-reload.
+
+The CLI spits out the file name correctly every time it's edited, but the page simply doesn't update. I've done some messing around to try and figure out if one part of the page specifically is causing the issues, but to no avail.
+
+This is happening with `astro@3.0.12` and `@astrojs/react@3.0.2`, so hopefully maybe it will be improved in the future.
+
+## Conclusion
+
+With some of the weird issues I've run into with Astro, it feels at times like I'm still using beta software. And a few times because I've lacked trust in the framework, I have annoyingly blamed some problem on the framework that was actually my own doing. 
+
+However, it _has_ greatly improved my blog post writing experience, so I am glad I switched and plan to stick with it at least for the time being.
+
+If [Next.js' MDX support](https://nextjs.org/docs/pages/building-your-application/configuring/mdx) improves in the future, I may consider switching back. But for now, Astro is the best option for me, and I wouldn't hesitate to recommend it to anyone else looking to build a blog.

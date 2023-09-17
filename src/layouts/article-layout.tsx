@@ -20,7 +20,6 @@ export function ArticleLayout(props: ArticleLayoutProps) {
   return (
     <Layout
       className={cs('BlogLayout pt-24 md:pt-36 pb-32 max-w-5xl mx-auto', className)}
-      title={title}
       {...rest}
     >
       <div className="max-w-2xl mx-auto">

@@ -12,9 +12,17 @@
   }
 }
 
-.pre {
-  background: rgb(35, 36, 31) !important;
+.prose {
+  @extend .scrollbar;
+
   code {
-    background: none !important;
+    padding: 4px !important;
+  }
+  pre {
+    background: rgb(35, 36, 31) !important;
+    code {
+      background: none !important;
+      padding: 0 !important;
+    }
   }
 }

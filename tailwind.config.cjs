@@ -11,6 +11,14 @@ module.exports = {
   content,
   important: true,
   theme: {
+    // These are the Tailwind defaults, just included here for quick reference
+    screens: {
+      sm: '640px',
+      md: '768px',
+      lg: '1024px',
+      xl: '1280px',
+      '2xl': '1536px',
+    },
     extend: {
       colors: {
         bgprimary: 'var(--color-bg-primary)',

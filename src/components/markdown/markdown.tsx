@@ -1,19 +1,7 @@
 import {Aside} from '../aside'
-import styles from './markdown.module.scss'
 
 export const mdxComponents: MDXComponents = {
   blockquote: BlockQuote,
-  pre: Pre,
-}
-
-function Pre(props: any) {
-  // Avoid a warning about tabindex vs tabIndex
-  const {tabindex, ...rest} = props
-  return (
-    <div className={styles.scrollbar}>
-      <pre {...rest} className={`${props.className} ${styles.pre}`} tabIndex={tabindex} />
-    </div>
-  )
 }
 
 function BlockQuote(props: any) {

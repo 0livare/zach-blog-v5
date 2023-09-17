@@ -2,7 +2,7 @@ import React from 'react'
 import {twMerge as cs} from 'tailwind-merge'
 
 import {textColorClass} from '~/utils'
-import markdownStyles from './markdown.module.scss'
+import styles from './prose.module.scss'
 
 export type ProseProps = React.ComponentProps<'div'>
 
@@ -23,7 +23,7 @@ export function Prose(props: ProseProps) {
       }
       className={cs(
         className,
-        markdownStyles.prose,
+        styles.prose,
         'prose prose-slate dark:prose-invert lg:prose-lg px-4 mx-auto md:px-0 md: pb-8',
         textColorClass('prose-p'),
         textColorClass('prose-li'),

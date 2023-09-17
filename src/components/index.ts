@@ -1,6 +1,7 @@
 export * from './add-props'
 export * from './aside'
 export * from './asterisk'
+export * from './blog-full-width/blog-full-width'
 export * from './blog-list'
 export * from './button'
 export * from './formatted-date'
