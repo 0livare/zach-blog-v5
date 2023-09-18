@@ -30,11 +30,11 @@ const {className} = Astro.props
             As the security champion for GLAS, I worked with security consultants and 3rd party pen
             testers to meet corporate security requirements
           </li>
-          <li>
+          <li class="hidden md:list-item">
             Contributed to CCT, the Controller Configuration Tool, an application used by installers
             all over the world to flash and set up new and existing HVAC controllers
           </li>
-          <li>
+          <li class="hidden md:list-item">
             Contributed to what would become the largest scale automated testing framework ever
             created at the company, encompassing an entire suite of applications
           </li>
@@ -69,7 +69,7 @@ const {className} = Astro.props
             lightweight wrappers were created for React and Angular to maximize adoption
           </li>
           <li>Created and maintained complex monorepo build systems</li>
-          <li>
+          <li class="hidden md:list-item">
             Met with engineering leaders throughout the company to convey the importance and
             benefits of the design system
           </li>
@@ -88,10 +88,14 @@ const {className} = Astro.props
             Got team and leadership buy in on a re-write of the customer facing site from heavily
             customized WordPress to Next.js
           </li>
-          <li>Collected information on user behavior with Google Analytics & Mixpanel</li>
-          <li>Executed A/B tests to enable data-driven design</li>
-          <li>Worked closely with the UX team to collaborate on difficult problems</li>
-          <li>Wrote meaningful, robust automated tests</li>
+          <li class="hidden md:list-item">
+            Collected information on user behavior with Google Analytics & Mixpanel
+          </li>
+          <li class="hidden md:list-item">Executed A/B tests to enable data-driven design</li>
+          <li class="hidden md:list-item">
+            Worked closely with the UX team to collaborate on difficult problems
+          </li>
+          <li class="hidden md:list-item">Wrote meaningful, robust automated tests</li>
         </ul>
       </Project>
     </OverflowCarousel.Slide>
@@ -127,11 +131,11 @@ const {className} = Astro.props
             Created and thoroughly documented a shared utility library that removed thousands of
             lines of duplicated code across 10+ projects
           </li>
-          <li>
+          <li class="hidden md:list-item">
             Authored a custom framework to allow for the creation of reusable email templates in
             React and MJML
           </li>
-          <li>Mentored junior & mid-level developers</li>
+          <li class="hidden md:list-item">Mentored junior & mid-level developers</li>
         </ul>
       </Project>
     </OverflowCarousel.Slide>
@@ -139,7 +143,7 @@ const {className} = Astro.props
     <OverflowCarousel.Slide>
       <Project src={githubImg} title="Open source contributions" alt="github" imgClassName="invert">
         <h3 class="font-bold mt-4 text-base">Creator of:</h3>
-        <ul class="list-disc flex flex-col gap-2 ml-8">
+        <ul class="list-disc flex flex-col gap-2">
           <li>
             <ProjectLink to="https://www.npmjs.com/package/unorepo" label="Unorepo" /> - A CLI for
             monorepo management
@@ -159,8 +163,8 @@ const {className} = Astro.props
           </li>
         </ul>
 
-        <h3 class="font-bold mt-4 text-base">Contributor to:</h3>
-        <ul class="list-disc flex flex-col gap-2 ml-8">
+        <h3 class="font-bold mt-4 text-base hidden md:block">Contributor to:</h3>
+        <ul class="list-disc flex-col gap-2 hidden md:flex">
           <li>
             <ProjectLink to="https://github.com/jquense/yup" label="Yup" /> - Schema validation
             library
