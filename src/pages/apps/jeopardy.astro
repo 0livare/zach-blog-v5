@@ -8,16 +8,17 @@ import {JeopardyGame} from '~/page-components'
 
 const title = 'Jeopardy Score Tracker'
 const description = 'Type your categories in the top row and play along as you watch!'
-
-const filePath = path.join(process.cwd(), 'src', 'content', 'wordle', '_wordle-words-ranked.txt')
-const buffer = await fs.readFile(filePath)
-const allPossibleWords = buffer.toString().split('\n')
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
-    <BaseHead title={title} description={description} />
+    <BaseHead
+      type="website"
+      title={title}
+      description={description}
+      src="/images/apps/jeopardy.jpg"
+    />
   </head>
 
   <body>

@@ -13,7 +13,12 @@ const posts = (await getCollection('recipes'))
 <!doctype html>
 <html lang="en">
   <head>
-    <BaseHead title="Zach's Cookbook" description={SITE_DESCRIPTION} />
+    <BaseHead
+      type="website"
+      title="Zach's Cookbook"
+      description="Battle tested recipes without the life story"
+      src="/images/cooking/ingredients.jpg"
+    />
   </head>
 
   <body>

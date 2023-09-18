@@ -7,8 +7,6 @@ import {WordleSolver} from '~/page-components'
 import {Title, Navigation, LittleCubes} from '~/components'
 
 const title = 'Worlde Solver'
-const description =
-  'Type the words you have so far, then click the tiles to turn them green or yellow. The suggestions are ranked based on which word will eliminate the most remaining possibilities.'
 
 const filePath = path.join(process.cwd(), 'src', 'content', 'wordle', '_wordle-words-ranked.txt')
 const buffer = await fs.readFile(filePath)
@@ -18,7 +16,12 @@ const allPossibleWords = buffer.toString().split('\n')
 <!doctype html>
 <html lang="en">
   <head>
-    <BaseHead title={title} description={description} />
+    <BaseHead
+      type="website"
+      title={title}
+      description="A tool to help you solve a Wordle puzzle"
+      src="/images/apps/wordle.jpg"
+    />
   </head>
 
   <body>
