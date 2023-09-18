@@ -1,5 +1,6 @@
 import type {ComponentProps} from 'react'
 import {twMerge as cs} from 'tailwind-merge'
+import styles from './recipe-card.module.scss'
 
 export type RecipeCardProps = ComponentProps<'a'> & {
   to?: string
@@ -22,7 +23,9 @@ export function RecipeCard(props: RecipeCardProps) {
       )}
       style={{backgroundImage: `url(${src})`}}
     >
-      <div className="absolute bottom-0 w-full p-4 rounded-lg bg-white/40 text-stone-800">
+      <div
+        className={`absolute bottom-0 w-full px-4 pb-4 pt-16 rounded-lg bg-gradient-to-t from-white/70 to-transparent text-stone-800 ${styles.textStroke}`}
+      >
         <h3 className="font-serif text-3xl">{title}</h3>
       </div>
     </a>
