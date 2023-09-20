@@ -9,7 +9,7 @@
     "preview": "astro preview"
   },
   "dependencies": {
-    "@astrojs/mdx": "^1.0.3",
+    "@astrojs/mdx": "^1.1.0",
     "@astrojs/react": "^3.0.2",
     "@astrojs/rss": "^3.0.0",
     "@astrojs/sitemap": "^3.0.0",
@@ -18,7 +18,7 @@
     "@tailwindcss/typography": "^0.5.10",
     "@types/react": "^18.0.21",
     "@types/react-dom": "^18.0.6",
-    "astro": "^3.0.12",
+    "astro": "^3.1.1",
     "feather-icons-react": "^0.6.2",
     "hast-util-to-string": "^3.0.0",
     "hastscript": "^8.0.0",
