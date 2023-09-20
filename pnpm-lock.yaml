@@ -104,7 +104,7 @@ devDependencies:
     specifier: ^5.0.1
     version: 5.0.1
   bun-types:
-    specifier: ^1.0.1
+    specifier: ^1.0.2
     version: 1.0.2
   prettier:
     specifier: ^3.0.3
