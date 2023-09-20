@@ -3,13 +3,14 @@ import type {CollectionEntry} from 'astro:content'
 
 import {Navigation, LittleCubes} from '~/components'
 import {Prose} from '~/page-components'
-import SocialMediaPreview from '~/components/social-media-preview.astro'
 import BaseHead from '../components/base-head.astro'
 import {ArticleLayout} from './article-layout'
 
-type Props = CollectionEntry<'blog'>['data']
+type Props = Omit<CollectionEntry<'blog'>['data'], 'tags'> & {
+  showAuthor?: boolean
+}
 
-const {title, description, heroImage, date, author} = Astro.props
+const {title, description, heroImage, date, author, showAuthor = true} = Astro.props
 ---
 
 <html lang="en">
@@ -28,7 +29,7 @@ const {title, description, heroImage, date, author} = Astro.props
           description={description}
           heroImageSrc={heroImage}
           date={date}
-          author={author}
+          author={showAuthor ? author : undefined}
         >
           <slot />
         </ArticleLayout>

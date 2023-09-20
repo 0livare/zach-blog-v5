@@ -123,7 +123,7 @@ function AdjustableAmount(props: AdjustableAmountProps) {
     return <>{keepStrAmountAtScale ? amount : scale === 1 ? amount : '-'}</>
   }
 
-  if (scalePercent == null || scalePercent !== 100) {
+  if (scalePercent == null) {
     let scaledAmount = amount * scale
     let {amount: convertedAmount, unit: convertedUnit} = convertToAppropriateUnit({
       amount: scaledAmount,
