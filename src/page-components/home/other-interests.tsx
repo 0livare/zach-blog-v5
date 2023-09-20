@@ -14,15 +14,14 @@ export function OtherInterests(props: OtherInterestsProps) {
       <SectionTitle className="inline-block">My Other Interests</SectionTitle>
 
       <Paragraph>
-        When I&apos;m not writing code, I enjoy cooking, photography, and spending time with my
-        fiancé Kierstyn and my two dogs, Lola and Fitz. I&apos;m an avid Brewers fan and love
-        venturing into the great outdoors whenever possible.
+        When I&apos;m not writing code, I enjoy cooking, photography, and spending time with my wife
+        Kierstyn and my two dogs, Lola and Fitz. I&apos;m an avid Brewers fan and love venturing
+        into the great outdoors whenever possible.
       </Paragraph>
 
       <Paragraph>
-        Also, as you might have guessed from my website, I also enjoy solving Rubik&apos;s cubes! I
-        have cubes as small as a 2x2 and as large as a 7x7, but my favorite is still the good
-        &apos;ol 3x3.
+        Also, as you might have guessed from the design of my website, I also enjoy solving Rubik's
+        cubes now and again.
       </Paragraph>
 
       <PhotoGallery />

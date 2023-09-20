@@ -2,14 +2,7 @@
 import {Navigation} from '~/components'
 import BaseHead from '../components/base-head.astro'
 import {SITE_DESCRIPTION} from '../constants'
-import {
-  DesignCredit,
-  MiniBio,
-  OtherInterests,
-  JobHistory,
-  Technologies,
-  Jumbotron,
-} from '~/page-components'
+import {MiniBio, OtherInterests, JobHistory, Technologies, Jumbotron} from '~/page-components'
 ---
 
 <!doctype html>
@@ -36,7 +29,6 @@ import {
       <JobHistory />
       <Technologies />
       <OtherInterests client:visible />
-      <DesignCredit />
     </main>
   </body>
 </html>
