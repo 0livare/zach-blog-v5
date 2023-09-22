@@ -45,16 +45,29 @@ const OverflowCarousel = React.forwardRef(function OverflowCarousel(
   const hasHorizontalScrollbar =
     Number(scrollerRef.current?.scrollWidth) > Number(scrollerElClientWidth)
 
+  function getSlideElements() {
+    let children = scrollerRef.current?.childNodes
+
+    if (children?.length && children[0].nodeName === 'ASTRO-SLOT') {
+      // This second .childNodes is only necessary when this component is
+      // rendered in a .astro file because the scrollerRef.current?.childNodes
+      // is an <astro-slot> element instead of the actual children.
+      children = children[0].childNodes
+    }
+
+    return children ? (Array.from(children) as HTMLElement[]) : []
+  }
+
   // Scroll to initialIndex
   React.useEffect(() => {
-    const children = scrollerRef.current!.childNodes
-    if (!children.length || initialIndex == null) return
+    const slides = getSlideElements()
+    if (!slides.length || initialIndex == null) return
 
     let totalWidth = 0
-    let realIndex = initialIndex >= 0 ? initialIndex : initialIndex + children.length
+    let realIndex = initialIndex >= 0 ? initialIndex : initialIndex + slides.length
 
-    for (let i = 0; i < Math.min(realIndex, children.length); ++i) {
-      const child = children[i] as HTMLElement
+    for (let i = 0; i < Math.min(realIndex, slides.length); ++i) {
+      const child = slides[i] as HTMLElement
       totalWidth += child.getBoundingClientRect().width
       totalWidth += GAP
     }
@@ -66,11 +79,11 @@ const OverflowCarousel = React.forwardRef(function OverflowCarousel(
   // Note: This only looks at the first child and assumes that all
   // others have the same width.
   React.useEffect(() => {
-    const children = scrollerRef.current!.childNodes
-    if (!children.length) return
+    const slides = getSlideElements()
+    if (!slides.length) return
 
-    const firstChild = children[0] as HTMLElement
-    setChildWidth(firstChild.getBoundingClientRect().width)
+    const firstSlide = slides[0] as HTMLElement
+    setChildWidth(firstSlide.getBoundingClientRect().width)
   }, [])
 
   return (
