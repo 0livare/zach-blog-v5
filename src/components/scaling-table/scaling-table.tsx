@@ -13,6 +13,8 @@ export function ScalingTable(props: ScalingTableProps) {
   const [scale, setScale] = React.useState(1)
   const [hundredPercentIngMassInG, setHundredPercentIngMassInG] = React.useState(100)
 
+  console.log('children', children)
+
   return (
     <table {...rest} className={cs('ScalingTable', className)}>
       <thead className="uppercase">
@@ -23,11 +25,7 @@ export function ScalingTable(props: ScalingTableProps) {
           <th>Scaling</th>
         </tr>
       </thead>
-      <ScalingTableContext.Provider
-        value={{scale, setScale, hundredPercentIngMassInG, setHundredPercentIngMassInG}}
-      >
-        <tbody>{children}</tbody>
-      </ScalingTableContext.Provider>
+      <tbody>{children}</tbody>
     </table>
   )
 }

@@ -34,21 +34,21 @@ const createSROnlyLabel = (text) => {
 // https://astro.build/config
 export default defineConfig({
   site: 'https://olivare.net',
-  integrations: [mdx(), sitemap(), react(), tailwind()],
-  markdown: {
-    rehypePlugins: [
-      rehypeSlug,
-      [
-        rehypeAutolinkHeadings,
-        {
-          behavior: 'append',
-          group: ({tagName}) => h(`div.heading-wrapper.level-${tagName}`, {tabIndex: -1}),
-          content: (heading) => [
-            h(`span.anchor-icon`, {ariaHidden: 'true'}, AnchorLinkIcon),
-            createSROnlyLabel(toString(heading)),
-          ],
-        },
-      ],
-    ],
-  },
+  integrations: [mdx(), sitemap(), react({experimentalReactChildren: true}), tailwind()],
+  // markdown: {
+  //   rehypePlugins: [
+  //     rehypeSlug,
+  //     [
+  //       rehypeAutolinkHeadings,
+  //       {
+  //         behavior: 'append',
+  //         group: ({tagName}) => h(`div.heading-wrapper.level-${tagName}`, {tabIndex: -1}),
+  //         content: (heading) => [
+  //           h(`span.anchor-icon`, {ariaHidden: 'true'}, AnchorLinkIcon),
+  //           createSROnlyLabel(toString(heading)),
+  //         ],
+  //       },
+  //     ],
+  //   ],
+  // },
 })
