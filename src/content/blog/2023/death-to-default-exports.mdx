@@ -1,0 +1,145 @@
+---
+title: Death to Default Exports!
+description: Why you should go right now and delete every "default" from your codebase
+author: Zach Olivare
+date: 2023-10-13
+tags: js, exports, code style, opinion
+heroImage: /images/blog/friendship-ended-default-exports.png
+---
+
+import {Aside, mdxComponents} from '~/components'
+export const components = mdxComponents
+
+I am continuously surprised at how commonly I see developers using default exports as their "default" strategy for exporting JavaScript modules from files. I will make the case in this post that you should prefer named exports for every module exported from every one of your JS files.
+
+If you get to the end of this article and still have something to say in defense of default exports, please [let me know](http://www.twitter.com/0livare)!
+
+## 1. The sole advantage is in fact a disadvantage
+
+The only advantage of default exports is that you can import them with a different name than they had when they were exported. But why would you ever intentionally do that? To make it harder to do a global project search for the name of the component? To make your code less readable? To hasten the heat death of the universe?
+
+You would never do intentionally do that, but with default exports doing so _accidentally_ is only one typo away.
+
+## 2. You can't export default const (or let, or var)
+
+You can't default export a variable at the same time you declare it, so instead it becomes a more awkward two step process. This is especially annoying if you're the type of person who likes to declare your functions with `const`:
+
+```js
+const myFunction = () => {
+  // A
+  // whole
+  // bunch
+  // of
+  // code
+  // that
+  // you
+  // have
+  // to
+  // scroll
+  // past
+}
+
+export default myFunction
+```
+
+When reading this file you now have to scroll down to the bottom of the function to know if it's exported or not, AND IF SO BY WHAT NAME.
+
+It's so much nicer with a named export
+
+```js
+export const myFunction = () => {}
+```
+
+<Aside variant="gray" className="mt-10">
+
+Chalk this up as one more reason to just declare your function as a `function`? Ugh that's a fight for another <strike>day</strike> post.
+
+</Aside>
+
+## 3. Default exports can't be re-exported from barrel files
+
+I love barrel files, because I love clean imports. Being able to do:
+
+```js
+import {Thing1, Thing2, Thing3} from '~/components'
+```
+
+and not have to worry exactly which file each of those components lives and not have a long complicated import path for every module in is a huge win for developer experience in my book.
+
+But if you `export default Thing1`, then in the barrel file the star export `export * from './thing1'` isn't going to work because Thing1 doesn't have a module name! So instead you're forced to give it one, similarly to how you would if you were trying to import the module:
+
+```js
+export {default as Thing1} from './thing1'
+export * from './thing1' // Still necessary if there are other named exports
+```
+
+Just another opportunity for a typo.
+
+## 4. Mixing default imports with named imports creates inconsistency
+
+Because each file can only have a single default export, you're always going to have some named exports even if you're intentionally trying to avoid them.
+
+> Using TypeScript? **Every** exported `type` is a named export.
+
+And now all of a sudden you've got both kinds scattered about your codebase and you can't be certain how to import the module you need without opening the file and checking.
+
+<Aside variant="gray" className="my-10">
+  I have a similar argument for why your filenames should all use kebab-case, but that's a fight for
+  another <strike>day</strike> post.
+</Aside>
+
+## 5. Mixing default imports with named imports is awkward
+
+Not to mention that it's just so awkward to import both a default and named export from the same module:
+
+```ts
+import MyComponent, {type MyComponentProps} from './my-component'
+```
+
+## 6. It's just less typing
+
+If I still haven't convinced you to drop the `default`, can I persuade you with silly character count argument?
+
+```js
+// Default Export: 91 characters
+const colors = ['red', 'green', 'blue']
+export default colors
+import colors from './colors'
+```
+
+```js
+// Named Export: 78 characters
+export const colors = ['red', 'green', 'blue']
+import {colors} from './colors'
+```
+
+<Aside variant="warn" className="mt-48">
+
+**But my favorite framework uses default exports for all kinds of stuff!**
+
+Frameworks like Next.js and Remix use default exports because otherwise they would need to know the name of your component for them to import it!
+
+Take this excerpt from the example on the [Remix home page](https://remix.run):
+
+```js
+export async function loader({request}) {
+  return getProjects()
+}
+
+export async function action({request}) {
+  const form = await request.formData()
+  return createProject({title: form.get('title')})
+}
+
+export default function Projects() {
+  /* ... */
+}
+```
+
+`loader` and `action` here are named exports, and that's one of the reasons that those functions **must** have exactly those names! Name them anything else and they won't work (also JS only allows a single default export per file).
+
+Remix uses the `default` export for the component so that it doesn't have to care what the component's name is, which allows you the user to name it whatever makes sense for your application.
+
+But in your application code, you don't have the same problem. You already know the name of your own component!
+
+</Aside>
