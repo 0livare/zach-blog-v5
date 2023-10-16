@@ -17,19 +17,22 @@ export type ShowMoreProps = React.ComponentProps<'div'> & {
   }
   /** ID added to collapsible area for screen reader accessibility */
   id: string
+  /** Force to be open or closed for debugging purposes  */
+  open?: boolean
 }
 
 /**
  * A component that lets the user show or hide some of a group of elements
  */
 export function ShowMore(props: ShowMoreProps) {
-  const {children, className, showMoreWhat, classes = {}, id, ...rest} = props
+  const {children, className, showMoreWhat, classes = {}, id, open: openOverride, ...rest} = props
   const [isOpen, setIsOpen] = React.useState(false)
+  const finalIsOpen = openOverride === undefined ? isOpen : openOverride
 
   return (
     <div {...rest} className={cs('ShowMore', className, classes.root)}>
       <ReactCollapse.Collapse
-        isOpened={isOpen}
+        isOpened={finalIsOpen}
         theme={{collapse: styles.collapse, content: cs(classes.childWrapper, 'pb-2')}}
         id={id}
         aria-hidden={!isOpen}
@@ -45,15 +48,19 @@ export function ShowMore(props: ShowMoreProps) {
         onClick={() => setIsOpen((open) => !open)}
         data-action="disclosure"
         aria-controls={id}
-        aria-expanded={isOpen}
+        aria-expanded={finalIsOpen}
       >
         <span>
-          {`Show ${isOpen ? 'less' : 'more'}`}
+          {`Show ${finalIsOpen ? 'less' : 'more'}`}
           {showMoreWhat && ' '}
           {showMoreWhat}
         </span>
         <span
-          className={cs('ml-1 -mr-1', 'transition-transform duration-500', isOpen && 'rotate-180')}
+          className={cs(
+            'ml-1 -mr-1',
+            'transition-transform duration-500',
+            finalIsOpen && 'rotate-180',
+          )}
         >
           <Icon name="ChevronDown" size="1.5em" className="text-inherit" color={null} />
         </span>
