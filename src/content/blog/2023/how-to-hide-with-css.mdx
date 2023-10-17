@@ -1,0 +1,21 @@
+---
+title: All the ways to hide an element with CSS
+description: What are the differences?
+author: Zach Olivare
+date: 2023-10-17
+tags: css, html
+# heroImage: /images/blog/friendship-ended-default-exports.png
+---
+
+import {Aside, BlockQuote, ShowMore, mdxComponents} from '~/components'
+export const components = mdxComponents
+
+- display:none turns off the layout of the elements, so they are not rendered
+- visibility:hidden hides the elements without changing their layouts
+- opacity:0 causes the elements to be very transparent but users can still interact with them.
+- HTML hidden attribute
+- SR Only
+
+display:none removes the element from the normal flow of the page, allowing other elements to fill in.
+
+visibility:hidden leaves the element in the normal flow of the page such that is still occupies space.
