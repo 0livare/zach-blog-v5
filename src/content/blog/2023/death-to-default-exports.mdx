@@ -7,7 +7,7 @@ tags: js, exports, code style, opinion
 heroImage: /images/blog/friendship-ended-default-exports.png
 ---
 
-import {Aside, BlockQuote, ShowMore, mdxComponents} from '~/components'
+import {Aside, BlockQuote, ShowMore, Asterisk, mdxComponents} from '~/components'
 export const components = mdxComponents
 
 I am continuously surprised at how commonly I see developers using default exports as their "default" strategy for exporting JavaScript modules from files. I will make the case in this post that you should prefer named exports for every module exported from every one of your JS files.
@@ -105,7 +105,19 @@ import {Thing1, Thing2, Thing3} from '~/components'
 
 and not have to worry about exactly which file each of those components lives and not have a long complicated import path for every module in is a huge win for developer experience in my book.
 
-But if you `export default Thing1`, then in the barrel file the star export `export * from './thing1'` isn't going to work because Thing1 doesn't have a module name! So instead you're forced to give it one, similarly to how you would if you were trying to import the module:
+But if you `export default Thing1`, then in the barrel file the star export `export * from './thing1'` isn't going to work because Thing1 doesn't have a module name! So instead you're <Asterisk text={
+
+<>
+It turns out that you actually can re-export a default export from a barrel file with
+
+```js
+export {default} from './Thing1'
+```
+
+However, for the most part that's not going to be very useful because of course it can only be done once per barrel file. At whatever point you're grouping multiple exports together (the purpose of a barrel file), you will be _forced_ to give your export a name. So why not just do that from the start?
+
+</>
+}>forced</Asterisk> to give it one, similarly to how you would if you were trying to import the module:
 
 ```js
 export {default as Thing1} from './thing1'
