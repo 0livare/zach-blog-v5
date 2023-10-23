@@ -1,0 +1,81 @@
+---
+title: HTMl Tips & Tricks
+description: Easier solutions to common HTML problems, and HTML elements you might not know about.
+author: Zach Olivare
+date: 2023-10-23
+tags: html
+# heroImage: /images/blog/mac-setup/mac-os-ventura-wallpaper.jpg
+published: false
+---
+
+import {mdxComponents, ShowMore} from '~/components'
+export const components = mdxComponents
+
+## Just use an anchor
+
+If the only thing your button does is have a click handler that calls something like `history.pushState()` or `location.assign()` to send the user to a different page, then THAT'S NOT A BUTTON, IT'S A LINK!!
+
+Because it's a link, you should be using an anchor `<a>` element.
+
+Anchor's are more accessible because both sighted _and_ screen reader users will have an easier time using a link because both can determine exactly what url is taking them to.
+
+> If you hover over [any link](https://google.com), you can see the url in the bottom left of your browser.
+
+## Put every input inside of a label
+
+In almost every example I see on the web, inputs are being associated with inputs via an id.
+
+<div>
+  <label for="email">Email</label>
+  <input id="email" type="email" className="text-black" />
+</div>
+```html
+<div>
+  <label for="email">Email</label>
+  <input id="email" type="email" />
+</div>
+```
+
+That works; it's accessible and functional. But it forces you to come up with a globally unique id for every input.
+
+> React has the cool new [useId](https://react.dev/reference/react/useId) hook now if that's your jam, but that id will change over time. So if there are non-devs doing something like, for example, setting up app tours (to teach users about new features, etc.) that anchor to certain elements or creating dynamic analytic events, they'll have to be careful to not use that id.
+
+But you can create an equally accessible and functional input with no id whatsoever. Just put the input inside of its `<label>`:
+
+<label>
+  Email
+  <input type="email" className="text-black" />
+</label>
+```html
+<label>
+  Email
+  <input type="email" />
+</label>
+```
+
+## HTML Progress element
+
+<label>
+  Downloading progress:
+  <progress value="32" max="100">
+    32%
+  </progress>
+</label>
+```html
+<label>
+  Downloading progress:
+  <progress value="32" max="100">
+    32%
+  </progress>
+</label>
+```
+
+You can also put `<progress>` into indeterminate mode by not specifying a `value` attribute:
+
+<progress></progress>
+```html
+<label>
+  Downloading progress:
+  <progress></progress>
+</label>
+```
