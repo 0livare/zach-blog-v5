@@ -35,7 +35,7 @@ export function Tooltip(props: TooltipProps) {
             className: [
               'block bg-gray-800  dark:bg-gray-700 text-white',
               'max-w-sm rounded p-4',
-              'break-words font-bold leading-6 text-sm',
+              'break-words leading-6 text-sm',
             ].join(' '),
           })}
         >
