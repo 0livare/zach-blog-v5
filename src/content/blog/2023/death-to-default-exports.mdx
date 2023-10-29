@@ -91,7 +91,7 @@ export const myFunction = () => {}
 
 <Aside variant="gray" className="mt-10">
 
-Chalk this up as one more reason to just declare your function as a `function`? Ugh that's a fight for another <strike>day</strike> post.
+Chalk this up as one more reason to just declare your function as a `function`?
 
 </Aside>
 
@@ -114,6 +114,18 @@ export * from './thing1' // Still necessary if there are other named exports
 
 Just another opportunity for a typo.
 
+<Aside variant="gray" className="mt-24">
+
+So it turns out that you actually _can_ re-export a default export from a barrel file:
+
+```js
+export {default} from './thing1'
+```
+
+However, in my opinion, for the most part that's still not very useful because it can only be done once per barrel file. At whatever point you're grouping multiple exports together (the purpose of a barrel file), you _will_ be forced to give your export a name. So why not just do that from the start?
+
+</Aside>
+
 ## 4. Mixing default imports with named imports creates inconsistency
 
 Because each file can only have a single default export, you're always going to have some named exports even if you're intentionally trying to avoid them.
@@ -123,8 +135,7 @@ Because each file can only have a single default export, you're always going to 
 And now all of a sudden you've got both kinds scattered about your codebase and you can't be certain how to import the module you need without opening the file and checking.
 
 <Aside variant="gray" className="my-10">
-  I have a similar argument for why your filenames should all use kebab-case, but that's a fight for
-  another <strike>day</strike> post.
+  I have a similar argument for why your filenames should all use kebab-case.
 </Aside>
 
 ## 5. Mixing default imports with named imports is awkward
