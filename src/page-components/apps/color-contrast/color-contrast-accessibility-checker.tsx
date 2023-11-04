@@ -136,12 +136,19 @@ function calculateImageComposite(colors: string[]) {
     const {r: bgR, g: bgG, b: bgB, alpha: bgAlpha} = acc
 
     return {
-      r: r * alpha + bgR * (1 - alpha),
-      g: g * alpha + bgG * (1 - alpha),
-      b: b * alpha + bgB * (1 - alpha),
+      r: compositeOverPremultipliedWithGammaCorrection(r, alpha, bgR),
+      g: compositeOverPremultipliedWithGammaCorrection(g, alpha, bgG),
+      b: compositeOverPremultipliedWithGammaCorrection(b, alpha, bgB),
       alpha: alpha + bgAlpha * (1 - alpha),
     }
   })
 
   return safeParseColor(compositeColor)?.rgb().string()
+}
+
+/** 2.2 Seems to be the usual value, See: http://www.brucelindbloom.com/index.html?WorkingSpaceInfo.html */
+const GAMMA = 1.8
+
+function compositeOverPremultipliedWithGammaCorrection(c: number, alpha: number, bgC: number) {
+  return Math.pow(Math.pow(c, GAMMA) + Math.pow(bgC, GAMMA) * (1 - alpha), 1 / GAMMA)
 }
