@@ -1,0 +1,5 @@
+.overrideHover {
+  &:hover {
+    background-color: var(--iconBtnHoverBgColor) !important;
+  }
+}
