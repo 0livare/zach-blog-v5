@@ -47,12 +47,14 @@ export function safeParseColor(color: Parameters<typeof Color>[0]) {
   }
 }
 
-const MAX_COLOR = Number('0xffffffff')
 export function randomColor() {
   let color: Color | null = null
   while (!color) {
-    const hexValue = Math.floor(Math.random() * MAX_COLOR).toString(16)
-    color = safeParseColor('#' + hexValue)
+    const r = Math.floor(Math.random() * 255)
+    const g = Math.floor(Math.random() * 255)
+    const b = Math.floor(Math.random() * 255)
+    const a = Math.floor((Math.random() + 0.3) * 10) / 10
+    color = safeParseColor(`rgba(${r}, ${g}, ${b}, ${a})`)
   }
   return color.rgb().toString()
 }
