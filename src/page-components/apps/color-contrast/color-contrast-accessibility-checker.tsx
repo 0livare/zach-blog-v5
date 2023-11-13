@@ -1,6 +1,6 @@
 import React from 'react'
 import {calculateImageComposite, randomColor, testContrast} from './helpers'
-import {Layer, STICK_OUT_HEIGHT} from './layer'
+import {Layer, useStickOutSize} from './layer'
 import {Demo} from './demo'
 import {ContrastTextType} from './contrast-text-type'
 import {Icon} from '~/components'
@@ -17,6 +17,7 @@ export function ColorContrastAccessibilityChecker(props: React.ComponentProps<'d
     return bgColor.contrast(textColor)
   }, [bgColor, textColor])
   const testResults = testContrast(contrast)
+  const stickOutSize = useStickOutSize()
 
   function handleAddLayer() {
     setColors((prev) => [...prev, `${randomColor()}`])
@@ -34,7 +35,7 @@ export function ColorContrastAccessibilityChecker(props: React.ComponentProps<'d
     <div {...props}>
       <div className="flex flex-wrap gap-8">
         <div
-          style={{height: STICK_OUT_HEIGHT * colors.length, position: 'relative'}}
+          style={{height: stickOutSize * colors.length, position: 'relative'}}
           className="basis-96 grow-[3]"
         >
           {colors.map((color, index) => (
