@@ -4,6 +4,7 @@ import {twMerge} from 'tailwind-merge'
 
 import {Icon, IconButton} from '~/components'
 import {safeParseColor} from './helpers'
+import {ColorInput} from './color-input'
 
 export const STICK_OUT_HEIGHT = 66
 
@@ -16,6 +17,7 @@ export function Layer(props: any) {
   const isColorValid = !!colorObj
   const accentColor = colorObj?.isDark() ? 'white' : 'black'
   const hoverColor = Color(accentColor).alpha(0.2).rgb().toString()
+  const label = index === length - 1 ? 'Text Color' : 'Background Color ' + (index + 1)
 
   return (
     <div
@@ -31,16 +33,14 @@ export function Layer(props: any) {
         backgroundImage: isColorValid ? undefined : stripeBackgroundImage,
       }}
     >
-      <p className="text-xs absolute left-4 top-2" style={{color: accentColor}}>
-        {index === length - 1 ? 'Text Color' : 'Background Color ' + (index + 1)}
+      <p
+        className="text-xs mb-4 md:mb-0  md:absolute md:left-4 md:top-2"
+        style={{color: accentColor}}
+      >
+        {label}
       </p>
 
-      <input
-        type="text"
-        value={color}
-        onChange={(e) => onColorChange(index, e.target.value)}
-        className="bg-white/60 text-slate-800"
-      />
+      <ColorInput color={color} onChange={(val) => onColorChange(index, val)} label={label} />
 
       {index === length - 1 && (
         <div className="absolute bottom-0 right-0">
