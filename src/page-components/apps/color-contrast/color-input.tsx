@@ -1,7 +1,7 @@
 import React from 'react'
 import Color from 'color'
 import {twMerge} from 'tailwind-merge'
-import {ChromePicker} from 'react-color'
+import ChromePicker from 'react-color'
 
 import {safeParseColor} from './helpers'
 import {Tooltip} from '~/components'
@@ -45,6 +45,7 @@ export function ColorInput(props: ColorInputProps) {
         triggers={['focus']}
         ref={tooltipRef}
         title={
+          // @ts-ignore
           <ChromePicker
             color={colorObj}
             onChange={(color) => {
