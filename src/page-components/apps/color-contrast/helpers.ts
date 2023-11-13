@@ -48,6 +48,14 @@ export function safeParseColor(color: Parameters<typeof Color>[0]) {
 }
 
 export function randomColor() {
+  if (Math.random() < 0.5) {
+    return randomHslColor()
+  } else {
+    return randomRgbColor()
+  }
+}
+
+function randomRgbColor() {
   let color: Color | null = null
   while (!color) {
     const r = Math.floor(Math.random() * 255)
@@ -57,6 +65,19 @@ export function randomColor() {
     color = safeParseColor(`rgba(${r}, ${g}, ${b}, ${a})`)
   }
   return color.rgb().toString()
+}
+
+function randomHslColor() {
+  let color: Color | null = null
+  while (!color) {
+    const h = Math.floor(Math.random() * 360)
+    const s = Math.floor(Math.random() * 100)
+    const l = Math.floor(Math.random() * 100)
+    const a = Math.floor((Math.random() + 0.3) * 10) / 10
+    color = safeParseColor(`hsl(${h}, ${s}%, ${l}, ${a})`)
+    console.log({h, s, l, a, color})
+  }
+  return color.hsl().toString()
 }
 
 type RGBObj = {r: number; g: number; b: number; alpha: number}
