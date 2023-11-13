@@ -1,7 +1,5 @@
 import React from 'react'
-import Color from 'color'
-import {twMerge} from 'tailwind-merge'
-import {calculateImageComposite, randomColor, safeParseColor, testContrast} from './helpers'
+import {calculateImageComposite, randomColor, testContrast} from './helpers'
 import {Layer, STICK_OUT_HEIGHT} from './layer'
 import {Demo} from './demo'
 import {ContrastTextType} from './contrast-text-type'
@@ -9,7 +7,7 @@ import {Icon} from '~/components'
 import {ContrastRatio} from './contrast-ratio'
 
 export function ColorContrastAccessibilityChecker(props: React.ComponentProps<'div'>) {
-  const [colors, setColors] = React.useState(['#fff', 'rgb(0, 0, 0, 0.5)'])
+  const [colors, setColors] = React.useState(['#fff', 'rgb(0, 0, 0, 0.8)'])
   const bgColor = React.useMemo(() => calculateImageComposite(colors.slice(0, -1)), [colors])
   const textColor = React.useMemo(() => calculateImageComposite(colors), [colors])
   const bgColorStr = bgColor?.rgb().string()
@@ -66,7 +64,7 @@ export function ColorContrastAccessibilityChecker(props: React.ComponentProps<'d
       </div>
 
       <div className="flex flex-wrap gap-8 pb-32">
-        <ContrastRatio contrast={contrast} pass={!testResults.allFailed} />
+        <ContrastRatio contrast={contrast} pass={testResults.allPassed} />
 
         <div className="text-left py-8">
           <ContrastTextType title="Normal" aa={testResults.normal.aa} aaa={testResults.normal.aaa}>
@@ -78,11 +76,10 @@ export function ColorContrastAccessibilityChecker(props: React.ComponentProps<'d
             aa={testResults.large.aa}
             aaa={testResults.large.aaa}
           >
-            <Demo
-              bgColorStr={bgColorStr}
-              textColorStr={textColorStr}
-              className="text-lg font-bold"
-            />
+            <Demo bgColorStr={bgColorStr} textColorStr={textColorStr} className="flex-col">
+              <p className="text-lg font-bold">The five boxing wizards jump quickly.</p>
+              <p className="text-2xl">The five boxing wizards jump quickly.</p>
+            </Demo>
           </ContrastTextType>
 
           <ContrastTextType
@@ -90,13 +87,31 @@ export function ColorContrastAccessibilityChecker(props: React.ComponentProps<'d
             aa={testResults.icons.aa}
           >
             <Demo bgColorStr={bgColorStr} textColorStr={textColorStr}>
-              <div className="flex gap-8">
-                <input type="checkbox" />
+              <div className="flex gap-8 items-center">
                 <Icon name="Check" color="current" />
+                <input
+                  type="text"
+                  defaultValue="Text Input"
+                  style={{border: textColorStr}}
+                  className="border border-solid p-1 text-black"
+                />
               </div>
             </Demo>
           </ContrastTextType>
         </div>
+      </div>
+
+      <div className="text-wrapper pb-32">
+        <p>
+          WCAG 2.0 level AA requires a contrast ratio of at least 4.5:1 for normal text and 3:1 for
+          large text. WCAG 2.1 requires a contrast ratio of at least 3:1 for graphics and user
+          interface components (such as form input borders). WCAG Level AAA requires a contrast
+          ratio of at least 7:1 for normal text and 4.5:1 for large text.
+        </p>
+        <p>
+          Large text is defined as 14 point (typically 18.66px) and bold or larger, or 18 point
+          (typically 24px) or larger.
+        </p>
       </div>
     </div>
   )

@@ -10,7 +10,7 @@ export function Demo(props: DemoProps) {
   return (
     <div
       {...rest}
-      className={twMerge('border border-black/20 p-4 text-center', className)}
+      className={twMerge('border border-black/20 p-4 text-center flex items-center', className)}
       style={{backgroundColor: bgColorStr, color: textColorStr}}
     >
       {children || 'The five boxing wizards jump quickly.'}

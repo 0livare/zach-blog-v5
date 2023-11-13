@@ -2,19 +2,19 @@ import Color from 'color'
 
 const minContrastRatios = {
   normal: {
-    aa: 2.5,
-    aaa: 3,
+    aa: 4.5,
+    aaa: 7,
   },
   large: {
-    aa: 2.1,
-    aaa: 2.5,
+    aa: 3,
+    aaa: 4.5,
   },
   icons: {
-    aa: 2.6,
+    aa: 3,
   },
 }
 
-const easiestTest = Math.min(
+const hardestTest = Math.max(
   minContrastRatios.normal.aa,
   minContrastRatios.normal.aaa,
   minContrastRatios.large.aa,
@@ -24,7 +24,7 @@ const easiestTest = Math.min(
 
 export function testContrast(contrastRatio: number) {
   return {
-    allFailed: contrastRatio < easiestTest,
+    allPassed: contrastRatio >= hardestTest,
     normal: {
       aa: contrastRatio >= minContrastRatios.normal.aa,
       aaa: contrastRatio >= minContrastRatios.normal.aaa,

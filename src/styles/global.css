@@ -71,6 +71,17 @@ body {
   }
 }
 
+@layer utilities {
+  .max-w-text {
+    /* @apply max-w-5xl; */
+    max-width: 70ch;
+  }
+
+  .text-wrapper {
+    @apply max-w-text text-left flex flex-col gap-8 mx-auto;
+  }
+}
+
 *:focus {
   outline: 2px solid blue;
   outline: 2px solid -webkit-focus-ring-color;
