@@ -12,6 +12,7 @@ export function Title(props: TitleProps) {
       className={cs(
         'Title',
         'font-serif text-4xl md:text-7xl font-bold mb-3 md:mb-5 text-center uppercase',
+        'max-w-2xl text-center mx-auto',
         className,
       )}
       style={{color: 'var(--color-text-primary)', ...style}}

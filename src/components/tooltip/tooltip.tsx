@@ -1,25 +1,43 @@
 import React from 'react'
-import {usePopperTooltip} from 'react-popper-tooltip'
+import {usePopperTooltip, type TriggerType, type Config} from 'react-popper-tooltip'
+import {twMerge} from 'tailwind-merge'
 
 import {AddProps} from '../add-props'
 
-export type TooltipProps = Omit<React.ComponentProps<'div'>, 'color'> & {
-  title: string
+export type TooltipProps = Omit<React.ComponentProps<'div'>, 'color' | 'title'> & {
+  title: any
   children: any
+  open?: boolean
+  followCursor?: boolean
+  triggers?: TriggerType[]
+  placement?: Config['placement']
 }
 
 /**
  * An automatic popup to display short, helpful text near another element.
  */
-export function Tooltip(props: TooltipProps) {
-  const {children, title, ...rest} = props
+export const Tooltip = React.forwardRef(function Tooltip(
+  props: TooltipProps,
+  ref: React.ForwardedRef<any>,
+) {
+  const {
+    children,
+    className,
+    title,
+    open: forceVisible,
+    followCursor,
+    triggers,
+    placement,
+    ...rest
+  } = props
 
   const {getTooltipProps, setTooltipRef, setTriggerRef, visible} = usePopperTooltip({
     delayHide: 100,
     interactive: true,
-    trigger: ['hover', 'focus'],
-    followCursor: true,
+    trigger: triggers ?? ['hover', 'focus'],
+    followCursor: followCursor ?? true,
     offset: [0, 12],
+    placement,
   })
 
   if (!title) return children
@@ -27,16 +45,23 @@ export function Tooltip(props: TooltipProps) {
   return (
     <>
       <AddProps to={children} ref={setTriggerRef} />
-      {visible && (
+      {(forceVisible ?? visible) && (
         <div
           {...rest}
-          ref={setTooltipRef}
+          ref={(el) => {
+            if (el) {
+              // @ts-ignore
+              if (ref && 'current' in ref) ref.current = el
+              setTooltipRef(el)
+            }
+          }}
           {...getTooltipProps({
-            className: [
+            className: twMerge(
               'block bg-gray-800  dark:bg-gray-700 text-white',
               'max-w-sm rounded p-4',
               'break-words font-bold leading-6 text-sm',
-            ].join(' '),
+              className,
+            ),
           })}
         >
           {title}
@@ -44,4 +69,4 @@ export function Tooltip(props: TooltipProps) {
       )}
     </>
   )
-}
+})

@@ -1,0 +1,39 @@
+---
+import path from 'path'
+import fs from 'fs/promises'
+
+import BaseHead from '../../components/base-head.astro'
+import {ColorContrastAccessibilityChecker} from '~/page-components'
+import {Title, Navigation, LittleCubes} from '~/components'
+
+const title = 'Color Contrast Accessibility Checker'
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <BaseHead
+      type="website"
+      title={title}
+      description="With support for colors with alpha transparency"
+      src="/images/apps/wordle.jpg"
+    />
+  </head>
+
+  <body>
+    <LittleCubes />
+    <Navigation />
+
+    <main class="max-w-6xl mx-auto">
+      <div class="mx-6 mt-24 mb-12 md:mb-24 text-center text-tbase text-xl">
+        <Title>{title}</Title>
+        <p class="mt-8 max-w-xl mx-auto">
+          Determine if the contrast between two colors is sufficient for people with color blindness
+          to read. Supports multiple layers of alpha transparency.
+        </p>
+
+        <ColorContrastAccessibilityChecker client:load className="my-8" />
+      </div>
+    </main>
+  </body>
+</html>
