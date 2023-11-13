@@ -5,6 +5,7 @@ import {ChromePicker} from 'react-color'
 
 import {safeParseColor} from './helpers'
 import {Tooltip} from '~/components'
+import {useIsMobile} from '~/hooks'
 
 export type ColorInputProps = React.ComponentProps<'label'> & {
   color: string
@@ -17,10 +18,11 @@ export function ColorInput(props: ColorInputProps) {
   const [open, setOpen] = React.useState<boolean | undefined>(false)
   const inputRef = React.useRef<HTMLInputElement>(null)
   const tooltipRef = React.useRef<HTMLDivElement>(null)
+  const isMobile = useIsMobile()
 
   const colorObj = safeParseColor(color)?.rgb().object()
   // @ts-ignore
-  colorObj.a = colorObj?.alpha
+  if (colorObj) colorObj.a = colorObj?.alpha
 
   React.useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -52,7 +54,7 @@ export function ColorInput(props: ColorInputProps) {
             }}
           />
         }
-        placement="right-start"
+        placement={isMobile ? 'auto' : 'right-start'}
       >
         <input
           type="text"

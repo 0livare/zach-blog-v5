@@ -3,20 +3,14 @@ import Color from 'color'
 import {twMerge} from 'tailwind-merge'
 
 import {Icon, IconButton} from '~/components'
+import {useIsMobile} from '~/hooks'
 import {safeParseColor} from './helpers'
 import {ColorInput} from './color-input'
 
 const STICK_OUT_HEIGHT = 66
 export function useStickOutSize() {
-  const [width, setWidth] = React.useState(0)
-
-  React.useEffect(() => {
-    new ResizeObserver(() => {
-      setWidth(document.body.offsetWidth)
-    }).observe(document.body)
-  }, [])
-
-  const multiplier = width < 768 ? 1.75 : 1
+  const isMobile = useIsMobile()
+  const multiplier = isMobile ? 1.75 : 1
   return multiplier * STICK_OUT_HEIGHT
 }
 
@@ -31,6 +25,7 @@ export function Layer(props: any) {
   const accentColor = colorObj?.isDark() ? 'white' : 'black'
   const hoverColor = Color(accentColor).alpha(0.2).rgb().toString()
   const label = index === length - 1 ? 'Text Color' : 'Background Color ' + (index + 1)
+
   const stickOutSize = useStickOutSize()
 
   return (
