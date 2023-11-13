@@ -36,7 +36,7 @@ export function ColorContrastAccessibilityChecker(props: React.ComponentProps<'d
       <div className="flex flex-wrap gap-8">
         <div
           style={{height: stickOutSize * colors.length, position: 'relative'}}
-          className="basis-96 grow-[3]"
+          className="basis-[700px] grow-[3]"
         >
           {colors.map((color, index) => (
             <Layer

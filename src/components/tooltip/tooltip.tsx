@@ -1,8 +1,8 @@
 import React from 'react'
-import {usePopperTooltip, type TriggerType} from 'react-popper-tooltip'
+import {usePopperTooltip, type TriggerType, type Config} from 'react-popper-tooltip'
+import {twMerge} from 'tailwind-merge'
 
 import {AddProps} from '../add-props'
-import {twMerge} from 'tailwind-merge'
 
 export type TooltipProps = Omit<React.ComponentProps<'div'>, 'color' | 'title'> & {
   title: any
@@ -10,13 +10,26 @@ export type TooltipProps = Omit<React.ComponentProps<'div'>, 'color' | 'title'> 
   open?: boolean
   followCursor?: boolean
   triggers?: TriggerType[]
+  placement?: Config['placement']
 }
 
 /**
  * An automatic popup to display short, helpful text near another element.
  */
-export function Tooltip(props: TooltipProps) {
-  const {children, className, title, open: forceVisible, followCursor, triggers, ...rest} = props
+export const Tooltip = React.forwardRef(function Tooltip(
+  props: TooltipProps,
+  ref: React.ForwardedRef<any>,
+) {
+  const {
+    children,
+    className,
+    title,
+    open: forceVisible,
+    followCursor,
+    triggers,
+    placement,
+    ...rest
+  } = props
 
   const {getTooltipProps, setTooltipRef, setTriggerRef, visible} = usePopperTooltip({
     delayHide: 100,
@@ -24,6 +37,7 @@ export function Tooltip(props: TooltipProps) {
     trigger: triggers ?? ['hover', 'focus'],
     followCursor: followCursor ?? true,
     offset: [0, 12],
+    placement,
   })
 
   if (!title) return children
@@ -34,7 +48,13 @@ export function Tooltip(props: TooltipProps) {
       {(forceVisible ?? visible) && (
         <div
           {...rest}
-          ref={setTooltipRef}
+          ref={(el) => {
+            if (el) {
+              // @ts-ignore
+              if (ref && 'current' in ref) ref.current = el
+              setTooltipRef(el)
+            }
+          }}
           {...getTooltipProps({
             className: twMerge(
               'block bg-gray-800  dark:bg-gray-700 text-white',
@@ -49,4 +69,4 @@ export function Tooltip(props: TooltipProps) {
       )}
     </>
   )
-}
+})

@@ -15,14 +15,29 @@ export type ColorInputProps = React.ComponentProps<'label'> & {
 export function ColorInput(props: ColorInputProps) {
   const {className, color, onChange, label, ...rest} = props
   const [open, setOpen] = React.useState<boolean | undefined>(false)
+  const inputRef = React.useRef<HTMLInputElement>(null)
+  const tooltipRef = React.useRef<HTMLDivElement>(null)
+
+  React.useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      const clickedInput = inputRef.current?.contains(e.target as any)
+      const clickedTooltip = tooltipRef.current?.contains(e.target as any)
+      const shouldClose = !clickedInput && !clickedTooltip
+      if (shouldClose) setOpen(false)
+    }
+
+    document.body.addEventListener('click', handleClick)
+    return () => document.body.removeEventListener('click', handleClick)
+  })
 
   return (
     <label {...rest} className={twMerge('relative', className)}>
       <Tooltip
-        // open={open}
+        open={open}
         className="z-10"
         followCursor={false}
         triggers={['focus']}
+        ref={tooltipRef}
         title={
           <ChromePicker
             color={safeParseColor(color)?.rgb() ?? '#000000'}
@@ -40,6 +55,7 @@ export function ColorInput(props: ColorInputProps) {
             }}
           />
         }
+        placement="right-start"
       >
         <input
           type="text"
@@ -47,7 +63,7 @@ export function ColorInput(props: ColorInputProps) {
           onChange={(e) => onChange(e.target.value)}
           className="bg-white/60 text-slate-800 w-64 max-w-full"
           onFocus={() => setOpen(true)}
-          onBlur={() => setOpen(undefined)}
+          ref={inputRef}
         />
       </Tooltip>
 
