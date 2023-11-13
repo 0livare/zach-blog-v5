@@ -96,6 +96,8 @@ export function calculateImageComposite(colors: string[]) {
     .filter(Boolean)
     .filter((rgba) => rgba!.alpha ?? 1 > 0) as RGBObj[]
 
+  if (!rgbas.length) return null
+
   const compositeColor = rgbas.reduce((acc, rgba) => {
     const {r, g, b, alpha} = rgba
     const {r: bgR, g: bgG, b: bgB, alpha: bgAlpha} = acc
