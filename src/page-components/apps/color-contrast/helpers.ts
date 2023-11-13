@@ -75,7 +75,6 @@ function randomHslColor() {
     const l = Math.floor(Math.random() * 100)
     const a = Math.floor((Math.random() + 0.3) * 10) / 10
     color = safeParseColor(`hsl(${h}, ${s}%, ${l}%, ${a})`)
-    console.log({h, s, l, a, color})
   }
   return color.hsl().toString()
 }

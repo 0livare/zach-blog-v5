@@ -18,6 +18,10 @@ export function ColorInput(props: ColorInputProps) {
   const inputRef = React.useRef<HTMLInputElement>(null)
   const tooltipRef = React.useRef<HTMLDivElement>(null)
 
+  const colorObj = safeParseColor(color)?.rgb().object()
+  // @ts-ignore
+  colorObj.a = colorObj?.alpha
+
   React.useEffect(() => {
     function handleClick(e: MouseEvent) {
       const clickedInput = inputRef.current?.contains(e.target as any)
@@ -40,18 +44,11 @@ export function ColorInput(props: ColorInputProps) {
         ref={tooltipRef}
         title={
           <ChromePicker
-            color={safeParseColor(color)?.rgb() ?? '#000000'}
+            color={colorObj}
             onChange={(color) => {
               const obj = Color(color.hex).alpha(color.rgb.a)
-              if (color.source === 'rgb') {
-                onChange(obj.rgb().toString())
-              } else if (color.source === 'hex') {
-                onChange(obj.hex().toString())
-              } else if (color.source === 'hsl') {
-                onChange(obj.hsl().toString())
-              } else {
-                onChange(obj.hsv().toString())
-              }
+              const nextColorStr = obj[color.source]().toString()
+              onChange(nextColorStr)
             }}
           />
         }
