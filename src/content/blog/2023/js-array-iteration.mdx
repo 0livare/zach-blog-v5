@@ -12,7 +12,6 @@ slug: array-iteration
 import {Aside, mdxComponents} from '~/components'
 export const components = mdxComponents
 
-
 There are three primary methods to iterate over an array in JavaScript: `forEach`, `map`, and `reduce`. Each of these functions has its own use case, and it's important to understand the differences between them.
 
 ## forEach
@@ -54,13 +53,30 @@ const strings = ['0', '1', '2', '3', '4']
 const numbers = strings.map((str) => parseInt(str)) // [0, 1, 2, 3, 4]
 ```
 
+Unlike `forEach`, the `map` callback function can be `async`. Doing so will make `map` return an array of Promises, which you can then process in parallel (all at the same time) by passing the array returned from map to `await Promise.all()`. If you want to process the Promises in sequence (one at a time), you can await them inside of a `for...of` loop instead, and manually push the results into a new array.
+
+```js
+// Process async operations in parallel
+const promises = items.map((item) => myAsyncFunction(item))
+const results = await Promise.all(promises)
+
+// Process async operations in sequence
+const results = []
+for (const item of items) {
+  const result = await myAsyncFunction(item)
+  results.push(result)
+}
+```
+
 Use `map` when:
 
 - You want to take each item in the array and transform it in some way
+- You want to process a batch of async functions in parallel (all at the same time)
 
 **DO NOT USE `map` WHEN:**
 
 - You just want to iterate over the array. A simple iteration should be performed by `forEach` (or a for loop), not `map`.
+- You want to process a batch of async functions in sequence (one at a time)
 
 <Aside variant="warn">
   Using <code>map()</code> when you should be using <code>forEach()</code> will make the next person
@@ -83,7 +99,9 @@ Use `reduce` when:
 The signature of `reduce` can also be intimidating because it usually has a big inline function, but without the inline function it just looks like this:
 
 ```
+
 reduce(callback, initialValue)
+
 ```
 
 The `callback` function is called once for each item in the array. It takes two arguments: `accumulator` and `currentValue`.
