@@ -5,7 +5,7 @@ export function RecipeIngredients() {
     <ScalingTable>
       <Ingredient name="Unsalted butter" massInGrams={227} volume={1} volumeUnit="cups" />
       <Ingredient name="All purpose flour" massInGrams={250} volume={2} volumeUnit="cups" />
-      <Ingredient name="Baking soda" volume={1} volumeUnit="tsp" />
+      <Ingredient name="Baking soda" massInGrams={6} volume={1} volumeUnit="tsp" />
       <Ingredient name="Kosher salt" volume={0.75} volumeUnit="tsp" />
       <Ingredient name="Dark brown sugar" massInGrams={215} volume={1} volumeUnit="cups" />
       <Ingredient name="Granulated sugar" massInGrams={73} volume={0.33} volumeUnit="cups" />
